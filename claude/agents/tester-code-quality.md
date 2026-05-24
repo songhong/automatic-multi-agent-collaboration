@@ -191,3 +191,18 @@ BUG_OWNER_EXECUTOR: development-agent
 DISAGREED_RESOLVED_COUNT: <接受 DISAGREED 的问题数>
 DISAGREED_ESCALATED_COUNT: <升级的 DISAGREED 问题数>
 ```
+
+## Global Experience Library
+
+EXPERIENCE_LIBRARY_PATHS:
+- PROJECT_SHARED_EXPERIENCE: .agent-work/experience/shared-principles.md
+- PROJECT_AGENT_EXPERIENCE: .agent-work/experience/tester-code-quality.md
+- CLAUDE_GLOBAL_EXPERIENCE: $globalClaude
+- CODEX_GLOBAL_EXPERIENCE: $globalCodex
+
+Experience quality gate:
+1. Principle over number: write why the decision was wrong, not the literal value changed.
+2. Pattern over page: write the reusable layout, architecture, data, document, or workflow pattern, not a page-specific fix.
+3. Transferable over copyable: after removing concrete values, page names, file names, and project nouns, the lesson must still guide a future project.
+Before testing: read the project shared experience file and your project tester experience file, then apply relevant lessons.
+After a repair passes: verify the developer wrote <OUTPUT_DIR>/experience-append-summary.md and that the appended lesson passes the three-rule quality gate. If it is missing or too concrete, return FAIL or BLOCKED with the correction path. If you discover a reusable testing lesson, append it to your own project and global experience files when writable.

@@ -47,6 +47,14 @@ The workflow uses `.agent-work/` as the control plane:
 - `logs/`: machine JSONL and user-readable progress
 - `human-review/`: questions and blocked batch summaries
 - `final/`: final pipeline summary
+- `experience/`: per-agent project cache of reusable lessons
+
+The workflow can also keep global experience libraries outside the project:
+
+- Claude: `/home/zhuyu/.claude/agent-experience/<agent-name>.md`
+- Codex: `C:\Users\zhuyu\.codex\agent-experience\<agent-name>.md`
+
+Subagents read their shared and role-specific experience before work. After a successful repair, the responsible worker appends a transferable lesson locally and globally when writable. The coordinator only creates, syncs, and passes experience paths; it does not read experience bodies.
 
 ## Role Model
 
@@ -98,6 +106,7 @@ Token savings come from four design choices:
 - Path-only handoffs: large content stays on disk.
 - Selective testing: only required testers run; the default is code quality plus runtime.
 - Stable repair ownership: repair loops reuse the same responsible roles instead of restarting context-heavy investigations.
+- Reusable lessons: only distilled, pattern-level experience is persisted globally, so future runs benefit without pasting full failures into the coordinator context.
 
 ## Framework
 
@@ -118,6 +127,7 @@ Token savings come from four design choices:
 - Safer orchestration because the coordinator avoids reading or leaking business content.
 - Flexible role selection for frontend, backend, documents, data analysis, tools, full-stack integration, and release packaging.
 - Better human handoff when automation gets stuck: after three failed repair loops, the batch stops with a focused review file.
+- Long-term learning: each agent has its own experience library, filtered by principle-over-number, pattern-over-page, and transferable-over-copyable rules.
 
 ## Using The Codex Skill
 

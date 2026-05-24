@@ -32,6 +32,7 @@ allowed-tools: Agent(project-planner, architect-agent, development-agent, fronte
 - 日志、状态机、超时：`references/logging.md`
 - JSON schema 和控制面文件：`references/schemas.md`
 - agent 与 skill 配备矩阵：`references/agent-skill-matrix.md`
+- agent 经验库、三原则、全局同步：`references/experience.md`
 
 ## Control Plane Files
 

@@ -18,6 +18,16 @@ Initialize before planning or implementation.
 - Use a stable `run_id`, for example `YYYYMMDD-HHMMSS`.
 - Do not delete old runs. If cleanup is needed, move old generated pipeline artifacts to `.agent-work/archive/<timestamp>/`.
 
+## Experience Library Initialization
+
+Follow `references/experience.md`.
+
+- Create `.agent-work/experience/`.
+- Ensure UTF-8 files exist for `shared-principles.md` and every configured agent.
+- Copy or merge global Codex experience from `C:\Users\zhuyu\.codex\agent-experience\<agent-name>.md` into the matching project cache file when available.
+- If global files are missing, create them from the template in `references/experience.md`.
+- Preserve existing project experience files; do not overwrite them with empty templates.
+
 ## Required Initial Files
 
 - `.agent-work/input/project-requirements.md`: user's original request. The coordinator writes it and then treats it as opaque.

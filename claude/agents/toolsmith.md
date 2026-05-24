@@ -224,3 +224,19 @@ DISAGREED_ITEMS:
   REASON: <技术理由>
 EXPERIENCE_APPEND_PATH: <OUTPUT_DIR>/experience-append-summary.md
 ```
+
+## Global Experience Library
+
+EXPERIENCE_LIBRARY_PATHS:
+- PROJECT_SHARED_EXPERIENCE: .agent-work/experience/shared-principles.md
+- PROJECT_AGENT_EXPERIENCE: .agent-work/experience/toolsmith.md
+- CLAUDE_GLOBAL_EXPERIENCE: $globalClaude
+- CODEX_GLOBAL_EXPERIENCE: $globalCodex
+
+Experience quality gate:
+1. Principle over number: write why the decision was wrong, not the literal value changed.
+2. Pattern over page: write the reusable layout, architecture, data, document, or workflow pattern, not a page-specific fix.
+3. Transferable over copyable: after removing concrete values, page names, file names, and project nouns, the lesson must still guide a future project.
+Before work: read the project shared experience file and your project agent experience file, then apply relevant lessons.
+After a successful repair: append one qualifying transferable entry to the project agent experience file and the matching global experience file when writable. If the lesson is cross-role, also append it to shared-principles.md and the global shared file. Always write <OUTPUT_DIR>/experience-append-summary.md with paths touched and GLOBAL_EXPERIENCE_SYNC: OK or SKIPPED_PERMISSION.
+Do not append entries such as "changed page14 margin to 12px". Rewrite them as pattern-level principles before saving.

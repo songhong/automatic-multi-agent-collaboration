@@ -25,6 +25,16 @@
 .agent-work/experience
 ```
 
+## Experience Library Initialization
+
+Follow `references/experience.md`.
+
+- Create `.agent-work/experience/`.
+- Ensure UTF-8 files exist for `shared-principles.md` and every configured agent.
+- Copy or merge global Claude experience from `/home/zhuyu/.claude/agent-experience/<agent-name>.md` into the matching project cache file when available.
+- If global files are missing, create them from the template in `references/experience.md`.
+- Preserve existing project experience files; do not overwrite them with empty templates.
+
 ## Initial Control Files
 
 - `.agent-work/state/agent-id-cache.json`

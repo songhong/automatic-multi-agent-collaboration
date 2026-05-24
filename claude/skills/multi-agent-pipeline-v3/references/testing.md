@@ -30,7 +30,7 @@ Use `schemas.md` for the full shape. Required fields:
 
 ## Tester-Specific Evidence
 
-- `tester-code-quality`: build/lint/typecheck logs when available; code review report path; task package completeness check.
+- `tester-code-quality`: build/lint/typecheck logs when available; code review report path; task package completeness check; after a repair, verify `experience-append-summary.md` exists and the appended entry passes `references/experience.md`.
 - `tester-runtime-effect`: server log, browser console log, screenshot or interaction trace. For web apps, prefer installed `webapp-testing`.
 - `tester-visual-aesthetic`: desktop screenshot and mobile screenshot. Prefer installed `frontend-design`. If no screenshot can be produced, report limitation and do not PASS visual quality solely from CSS inspection.
 - `tester-security`: dependency audit output, secret scan output, security review notes. If tools are unavailable, record `TOOL_UNAVAILABLE`; do not install global tools without explicit permission.
@@ -47,6 +47,7 @@ A tester can PASS only when:
 - developer did not read source requirements outside authorized anchors,
 - blocking issue count is zero,
 - task-relevant acceptance has been checked,
+- required post-repair experience entries exist and are principle-level rather than page/value-level,
 - result JSON is complete.
 
 `SKIP` is allowed only when the tester is not relevant to the task type. Planner should avoid scheduling irrelevant testers.

@@ -104,3 +104,17 @@ SendMessage(to=<agent_id>, message=<handoff_message>)
 ## 日志
 
 每次关键事件追加一行 JSONL 到 `.agent-work/logs/pipeline-log.jsonl`。格式见 skill 文件第十五节。
+
+## Global Experience Library
+
+EXPERIENCE_LIBRARY_PATHS:
+- PROJECT_SHARED_EXPERIENCE: .agent-work/experience/shared-principles.md
+- PROJECT_AGENT_EXPERIENCE: .agent-work/experience/pipeline-coordinator.md
+- CLAUDE_GLOBAL_EXPERIENCE: $globalClaude
+- CODEX_GLOBAL_EXPERIENCE: $globalCodex
+
+Experience quality gate:
+1. Principle over number: write why the decision was wrong, not the literal value changed.
+2. Pattern over page: write the reusable layout, architecture, data, document, or workflow pattern, not a page-specific fix.
+3. Transferable over copyable: after removing concrete values, page names, file names, and project nouns, the lesson must still guide a future project.
+Coordinator rule: create, copy, merge, and pass experience paths only. Do not read experience bodies, do not summarize them, and do not include experience text in control-plane logs. During init, ensure every configured agent has a UTF-8 project cache file and matching global file when writable.

@@ -30,6 +30,7 @@ This skill is the lightweight entrypoint for a Codex-oriented multi-agent workfl
 - Logs, status machine, progress reports: `references/logging.md`
 - Control-plane schemas: `references/schemas.md`
 - Agent and Codex skill matrix: `references/agent-skill-matrix.md`
+- Agent experience libraries, three quality rules, and global sync: `references/experience.md`
 - Role prompts and quality bars: `references/roles.md`
 - Local fallback rubrics when a skill is unavailable: `references/rubrics.md`
 

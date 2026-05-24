@@ -14,6 +14,7 @@ Send the worker:
 - required output index path
 - previous attempt manifest path when repairing
 - previous failing test result path when repairing
+- project and global experience library paths
 
 ## Worker Output
 
@@ -55,6 +56,22 @@ Workers write implementation artifacts and a manifest:
 ```
 
 The coordinator may read the manifest fields but not the implementation artifact bodies or long notes.
+
+## Experience Update
+
+After any successful repair, the responsible worker must append a transferable lesson to:
+
+- `.agent-work/experience/<worker-role>.md`
+- the matching global experience file when writable
+- `shared-principles.md` only when the lesson is cross-role
+
+The entry must pass the three rules in `references/experience.md`: principle over number, pattern over page, and transferable over copyable. The worker must also write:
+
+```text
+<OUTPUT_DIR>/experience-append-summary.md
+```
+
+The summary lists project and global paths touched. It must not contain code bodies, secrets, or long business text.
 
 ## Integration Role
 

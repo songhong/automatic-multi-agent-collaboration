@@ -11,6 +11,7 @@ Developer agents read:
 - source requirement anchors from `TASK_PATH` only when explicitly authorized
 - `.agent-work/experience/shared-principles.md`
 - their own experience file
+- `references/experience.md` when reading or writing experience entries
 
 Developer agents write:
 
@@ -19,6 +20,22 @@ Developer agents write:
 - evidence files for commands run
 
 They return only structured status and paths.
+
+## Experience Update
+
+After any successful repair, the responsible developer must append a transferable lesson to:
+
+- `.agent-work/experience/<developer-agent>.md`
+- the matching global experience file when writable
+- `shared-principles.md` only when the lesson is cross-role
+
+The entry must pass the three rules in `references/experience.md`: principle over number, pattern over page, and transferable over copyable. The developer must also write:
+
+```text
+<OUTPUT_DIR>/experience-append-summary.md
+```
+
+The summary lists project and global paths touched. It must not contain code bodies, secrets, or long business text.
 
 ## Task Package Gate
 

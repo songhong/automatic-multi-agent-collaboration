@@ -43,7 +43,7 @@ Allowed status values:
 
 ## Tester Responsibilities
 
-- `tester-code-quality`: structure, maintainability, lint/type checks when available, local rubrics, task package completeness.
+- `tester-code-quality`: structure, maintainability, lint/type checks when available, local rubrics, task package completeness, and post-repair experience entry quality.
 - `tester-runtime-effect`: build, smoke test, command output, artifact openability.
 - `tester-visual-aesthetic`: layout, visual polish, screenshots, responsive checks.
 - `tester-security`: injection risk, secret leakage, unsafe file/network operations.
@@ -64,3 +64,14 @@ At least `tester-code-quality` must verify:
 - worker did not read source requirements outside authorized anchors
 
 If the task package is too vague, acceptance criteria are missing, or source-read authorization was exceeded, return `FAIL` or `BLOCKED`.
+
+## Experience Check
+
+After a repair attempt succeeds, at least `tester-code-quality` must verify:
+
+- `<OUTPUT_DIR>/experience-append-summary.md` exists
+- the summary points to `.agent-work/experience/<worker-role>.md`
+- the appended entry passes `references/experience.md`
+- the lesson is principle-level, pattern-level, and transferable rather than a literal page/value/file tweak
+
+If the entry is missing or too concrete, return `FAIL` or `BLOCKED` with the correction path.

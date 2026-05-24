@@ -51,3 +51,18 @@ ROLLBACK:
 ```
 
 只返回 `FINAL_SUMMARY_PATH`、状态和 fenced JSON block。
+
+## Global Experience Library
+
+EXPERIENCE_LIBRARY_PATHS:
+- PROJECT_SHARED_EXPERIENCE: .agent-work/experience/shared-principles.md
+- PROJECT_AGENT_EXPERIENCE: .agent-work/experience/release-packager.md
+- CLAUDE_GLOBAL_EXPERIENCE: $globalClaude
+- CODEX_GLOBAL_EXPERIENCE: $globalCodex
+
+Experience quality gate:
+1. Principle over number: write why the decision was wrong, not the literal value changed.
+2. Pattern over page: write the reusable layout, architecture, data, document, or workflow pattern, not a page-specific fix.
+3. Transferable over copyable: after removing concrete values, page names, file names, and project nouns, the lesson must still guide a future project.
+Before role work: read the project shared experience file and your project agent experience file, then apply relevant lessons.
+After completing role work: if you discover a reusable process, planning, integration, or packaging lesson, append it to your project and global experience files when writable, and write an experience append summary path in your result.
