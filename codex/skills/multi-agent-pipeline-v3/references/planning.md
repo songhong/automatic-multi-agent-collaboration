@@ -38,6 +38,25 @@ The planner returns only:
 - Resume the same planner role when possible. Otherwise use logical resume with the same paths and revision number.
 - Do not proceed to execution until the user approves the plan.
 
+## Plan Dissatisfaction Routing
+
+During plan review, user feedback such as "not satisfied", "you missed it", "read my task file carefully", "read the requirement file completely", "look again", or equivalent wording must be routed to the planner. It never authorizes the coordinator to read business payloads.
+
+Coordinator steps:
+
+1. Write the user's exact feedback to `.agent-work/input/user-feedback-v<N>.md`.
+2. Resume the same planner role when possible.
+3. Send only paths:
+   - `PROJECT_REQUIREMENTS_PATH`
+   - `MATERIALS_MANIFEST_PATH`
+   - `PREVIOUS_PLAN_PATH`
+   - `PREVIOUS_TASK_QUEUE_PATH`
+   - `USER_FEEDBACK_PATH`
+4. The planner reads those files and writes a revised plan and task queue.
+5. The coordinator returns only revised paths and status.
+
+The coordinator must not open, summarize, quote, or inspect the requirement body, task body, plan body, or material body while handling dissatisfaction.
+
 ## Task Queue Requirements
 
 Every task must include:

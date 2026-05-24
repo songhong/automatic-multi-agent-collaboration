@@ -12,6 +12,7 @@ allowed-tools: Agent(project-planner, architect-agent, development-agent, fronte
 
 - 运行环境以 WSL Claude Code 为准，只使用 `.claude/agents/`、`.claude/skills/`、`.agent-work/`。
 - 主 agent 只调度、写日志、汇报进度、维护控制面文件；不得读需求、计划、任务、代码、测试报告正文。
+- 计划确认阶段用户任何不满意、没理解、重新看、仔细看、完整看、阅读任务文件、阅读需求文件、按原文件重做等反馈，都不是主 agent 的阅读授权；主 agent 必须写入 `user-feedback-v<N>.md` 并 resume 同一 `project-planner`。
 - 子 agent 读业务文件并写产物；返回给主 agent 的内容只允许是状态、计数、路径和结构化 JSON。
 - 子 agent 首次启动使用 `run_in_background: true`；继续同一职责优先 `SendMessage(to=<agent_id>)`，失败才 `Agent()` 逻辑 Resume。
 - 谁开发谁修复，谁测试谁复测。三轮修复仍失败则停止该 batch，转人工。
@@ -57,7 +58,7 @@ allowed-tools: Agent(project-planner, architect-agent, development-agent, fronte
 1. 读取 `references/init.md`，初始化 run、日志、agent id cache、batch 配置和素材清单。
 2. 将用户需求写入 `.agent-work/input/project-requirements.md`，不再阅读正文。
 3. 启动或 resume `project-planner` 生成计划；把计划路径给用户确认，不读计划正文。
-4. 用户要求修改计划时，将反馈写入控制面文件并 resume 同一 planner。
+4. 用户要求修改计划，或要求仔细/完整/重新阅读需求、任务、素材文件时，将反馈写入控制面文件并 resume 同一 planner；主 agent 不得自行读取这些文件正文。
 5. 用户确认后，planner 生成 `.agent-work/state/current-batch-control.json`。
 6. 按 batch control 启动指定 developer/integrator/tester；主 agent 只读返回 JSON 和 result.json。
 7. 任一 tester 失败，按 `references/repair.md` resume 原 developer 和原 tester。

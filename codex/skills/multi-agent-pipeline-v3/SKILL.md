@@ -11,6 +11,7 @@ This skill is the lightweight entrypoint for a Codex-oriented multi-agent workfl
 
 - The main agent coordinates only: initialize state, write logs, hand off file paths, report progress, and maintain control-plane JSON.
 - The main agent must not read business payloads: requirements body, plan body, task body, code body, or full test reports.
+- During plan confirmation, user dissatisfaction or requests to carefully, completely, or again read requirement/task/material files are not coordinator read permission. The coordinator must write the feedback file and route it back to the same planner role.
 - Worker and tester agents read business files and write artifacts. They return only status, counts, paths, and structured JSON.
 - Every handoff must include current file paths. Do not rely on conversation memory as the only state.
 - Resume the same responsible agent for repair and retest whenever the runtime supports it. If true runtime resume is unavailable, use logical resume with the same role, same task id, previous manifest path, previous result path, and attempt number.
@@ -57,7 +58,7 @@ These files may contain agent names, runtime ids when available, run ids, batch 
 1. Read `references/init.md` and initialize the run, logs, id cache, batch config, and materials manifest.
 2. Write the user's original request to `.agent-work/input/project-requirements.md`, then stop reading that body.
 3. Ask the planner role to generate a plan and return only plan paths. Share those paths with the user for confirmation.
-4. If the user requests plan changes, write feedback to `.agent-work/input/user-feedback-v<N>.md` and resume the same planner role.
+4. If the user requests plan changes, is dissatisfied, or asks to carefully/completely/re-read requirement, task, or material files, write feedback to `.agent-work/input/user-feedback-v<N>.md` and resume the same planner role; the coordinator must not read those bodies.
 5. After user approval, have the planner produce `.agent-work/state/current-batch-control.json`.
 6. Dispatch the selected worker/integrator/testers from the batch control file. Read only returned JSON/status files.
 7. If any required tester fails, follow `references/repair.md` with the original worker and original tester.

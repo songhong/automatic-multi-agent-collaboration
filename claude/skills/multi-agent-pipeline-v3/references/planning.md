@@ -19,6 +19,30 @@ The coordinator only receives and shows paths/status. It does not read plan or t
 - User feedback is written to `.agent-work/input/user-feedback-v<N>.md`.
 - Revisions must resume the same planner when possible.
 
+## Plan Dissatisfaction Routing
+
+During plan confirmation, the following user intents must be routed to `project-planner`; they never authorize the coordinator to read business files:
+
+- "不满意", "没理解", "漏了", "不对"
+- "重新看", "仔细看", "完整看"
+- "阅读任务文件", "阅读需求文件", "看我给的文件"
+- "按原文件重做", "重新理解需求"
+
+Coordinator steps:
+
+1. Write the user's exact feedback to `.agent-work/input/user-feedback-v<N>.md`.
+2. Resume the same planner when possible.
+3. Send the planner these paths only:
+   - `PROJECT_REQUIREMENTS_PATH`
+   - `MATERIALS_MANIFEST_PATH`
+   - `PREVIOUS_PLAN_PATH`
+   - `PREVIOUS_TASK_QUEUE_PATH`
+   - `USER_FEEDBACK_PATH`
+4. The planner reads the requirement/material/previous plan files and writes a revised plan.
+5. The coordinator returns only revised paths and status to the user.
+
+The coordinator must not open, summarize, quote, or inspect the requirement body, task body, plan body, or material body while handling dissatisfaction.
+
 ## Agent Selection
 
 Planner must assign each task:
