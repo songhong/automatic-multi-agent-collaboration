@@ -43,7 +43,7 @@ Allowed status values:
 
 ## Tester Responsibilities
 
-- `tester-code-quality`: structure, maintainability, lint/type checks when available, local rubrics.
+- `tester-code-quality`: structure, maintainability, lint/type checks when available, local rubrics, task package completeness.
 - `tester-runtime-effect`: build, smoke test, command output, artifact openability.
 - `tester-visual-aesthetic`: layout, visual polish, screenshots, responsive checks.
 - `tester-security`: injection risk, secret leakage, unsafe file/network operations.
@@ -54,3 +54,13 @@ Allowed status values:
 ## Coordinator Aggregation
 
 The coordinator reads only status, counts, evidence paths, and report paths. Any required tester with `FAIL` or `BLOCKED` sends the batch to repair.
+
+## Task Package Check
+
+At least `tester-code-quality` must verify:
+
+- worker manifest includes `task_package_used`
+- task file includes goal, scope, acceptance criteria, expected outputs, source requirement path, source anchors, and source-read authorization
+- worker did not read source requirements outside authorized anchors
+
+If the task package is too vague, acceptance criteria are missing, or source-read authorization was exceeded, return `FAIL` or `BLOCKED`.

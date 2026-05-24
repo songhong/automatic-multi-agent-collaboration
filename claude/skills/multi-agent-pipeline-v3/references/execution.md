@@ -8,6 +8,7 @@ Developer agents read:
 
 - `TASK_PATH`
 - relevant project files
+- source requirement anchors from `TASK_PATH` only when explicitly authorized
 - `.agent-work/experience/shared-principles.md`
 - their own experience file
 
@@ -19,6 +20,28 @@ Developer agents write:
 
 They return only structured status and paths.
 
+## Task Package Gate
+
+Before implementation, every developer must inspect `TASK_PATH` for these fields:
+
+- `GOAL`
+- `SCOPE`
+- `ACCEPTANCE_CRITERIA`
+- `EXPECTED_OUTPUT_PATHS`
+- `SOURCE_REQUIREMENTS_PATH`
+- `SOURCE_ANCHORS`
+- `DEVELOPER_MAY_READ_SOURCE_REQUIREMENTS`
+
+If required fields are missing, vague, or insufficient to implement safely, do not start development. Write a clarification request:
+
+```text
+.agent-work/handoffs/<batch_id>/<developer-agent>/attempt-<N>/NEEDS_TASK_CLARIFICATION.md
+```
+
+Return `STATUS: NEEDS_TASK_CLARIFICATION` with that path. The coordinator routes it to `project-planner`.
+
+Developers may read the original requirement file only when `DEVELOPER_MAY_READ_SOURCE_REQUIREMENTS: true`, and only for the listed `SOURCE_ANCHORS`. Do not freely read unrelated requirement sections.
+
 ## Evidence Requirement
 
 Every implementation manifest must include:
@@ -28,6 +51,11 @@ VERIFICATION_EVIDENCE:
 - command: <command or N/A>
   status: pass | fail | skipped
   evidence_path: <path or N/A>
+TASK_PACKAGE_USED:
+  task_path: <TASK_PATH>
+  source_requirements_read: true | false
+  source_anchor_ids_read:
+    - <anchor_id or N/A>
 ```
 
 If a verification command cannot run, record `skipped` with a reason in the manifest. Do not claim it passed.

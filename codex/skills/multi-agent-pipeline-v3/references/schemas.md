@@ -36,6 +36,16 @@ These are minimal control-plane shapes. Agents may add fields if they do not pla
     {
       "task_id": "T001",
       "task_file_path": ".agent-work/tasks/T001.md",
+      "source_requirements_path": ".agent-work/input/project-requirements.md",
+      "source_anchors": [
+        {
+          "anchor_id": "REQ-001",
+          "must_read": true,
+          "locator": "section title, keyword, paragraph description, or line hint",
+          "reason": "why this source text is needed"
+        }
+      ],
+      "developer_may_read_source_requirements": true,
       "recommended_agent": "development-agent",
       "required_testers": ["tester-code-quality", "tester-runtime-effect"],
       "required_outputs": [

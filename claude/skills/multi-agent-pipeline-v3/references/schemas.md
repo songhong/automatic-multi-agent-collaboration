@@ -13,6 +13,16 @@
       "task_id": "task-001",
       "page_id": "page-001",
       "task_path": ".agent-work/tasks/task-001/task.md",
+      "source_requirements_path": ".agent-work/input/project-requirements.md",
+      "source_anchors": [
+        {
+          "anchor_id": "REQ-001",
+          "must_read": true,
+          "locator": "section title, keyword, paragraph description, or line hint",
+          "reason": "why this source text is needed"
+        }
+      ],
+      "developer_may_read_source_requirements": true,
       "developer_agent": "frontend-developer",
       "tester_agents": ["tester-code-quality", "tester-runtime-effect"],
       "output_check_index_path": ".agent-work/state/output-check-index/batch-001.json"
@@ -36,7 +46,13 @@ Every child agent final response must include a fenced JSON block:
   "attempt": 1,
   "status": "READY_FOR_TEST",
   "paths": {
-    "development_summary_path": ".agent-work/handoffs/..."
+    "development_summary_path": ".agent-work/handoffs/...",
+    "clarification_request_path": null
+  },
+  "task_package_used": {
+    "task_path": ".agent-work/tasks/task-001/task.md",
+    "source_requirements_read": true,
+    "source_anchor_ids_read": ["REQ-001"]
   }
 }
 ```

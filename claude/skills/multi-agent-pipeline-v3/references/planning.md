@@ -43,6 +43,36 @@ Coordinator steps:
 
 The coordinator must not open, summarize, quote, or inspect the requirement body, task body, plan body, or material body while handling dissatisfaction.
 
+## Task Package Completeness
+
+Planner must not compress long requirements into vague task summaries. Every generated `task.md` must be a self-contained task package that lets the assigned developer work without guessing.
+
+Each task package must contain:
+
+- goal and scope
+- relevant requirement anchors
+- material paths
+- acceptance criteria
+- expected output paths
+- uncertainty list
+- developer source-read authorization
+
+For long requirements, planner should not copy the full requirement into every task. Instead, write precise anchors:
+
+```yaml
+SOURCE_REQUIREMENTS_PATH: .agent-work/input/project-requirements.md
+DEVELOPER_MAY_READ_SOURCE_REQUIREMENTS: true
+SOURCE_ANCHORS:
+  - anchor_id: REQ-001
+    must_read: true
+    locator: "section title, keyword, page id, paragraph description, or line hint"
+    reason: "why this source text is needed for this task"
+```
+
+If a task can be completed from `task.md` alone, set `DEVELOPER_MAY_READ_SOURCE_REQUIREMENTS: false` and still explain the relevant source requirement in the task package.
+
+If planner cannot locate exact line numbers, use section titles, unique phrases, page names, material filenames, or paragraph descriptions as locators.
+
 ## Agent Selection
 
 Planner must assign each task:

@@ -8,6 +8,7 @@ Send the worker:
 
 - current batch control path
 - task file paths
+- source requirement anchors from task files
 - materials manifest path
 - output directory
 - required output index path
@@ -15,6 +16,22 @@ Send the worker:
 - previous failing test result path when repairing
 
 ## Worker Output
+
+## Task Package Gate
+
+Before implementation, every worker must inspect each task file for:
+
+- `GOAL`
+- `SCOPE`
+- `ACCEPTANCE_CRITERIA`
+- `EXPECTED_OUTPUT_PATHS`
+- `SOURCE_REQUIREMENTS_PATH`
+- `SOURCE_ANCHORS`
+- `DEVELOPER_MAY_READ_SOURCE_REQUIREMENTS`
+
+If required fields are missing, vague, or insufficient to implement safely, do not start work. Write `.agent-work/handoffs/<batch_id>/<worker-role>/attempt-<N>/NEEDS_TASK_CLARIFICATION.md` and return `STATUS: NEEDS_TASK_CLARIFICATION`.
+
+Workers may read the original requirement file only when `DEVELOPER_MAY_READ_SOURCE_REQUIREMENTS: true`, and only for the listed `SOURCE_ANCHORS`. Do not freely read unrelated requirement sections.
 
 Workers write implementation artifacts and a manifest:
 
@@ -28,6 +45,11 @@ Workers write implementation artifacts and a manifest:
   "required_outputs": [
     {"path": "dist/index.html", "required": true, "exists": true, "non_empty": true}
   ],
+  "task_package_used": {
+    "task_path": ".agent-work/tasks/T001.md",
+    "source_requirements_read": true,
+    "source_anchor_ids_read": ["REQ-001"]
+  },
   "notes_path": ".agent-work/results/B001/dev-notes.md"
 }
 ```

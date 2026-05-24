@@ -10,7 +10,7 @@ Quality bar:
 
 - Plan must be actionable without further interpretation.
 - Tasks must be small enough to test.
-- Every task must list `recommended_agent`, `required_testers`, `required_outputs`, dependencies, and acceptance criteria.
+- Every task must list `recommended_agent`, `required_testers`, `required_outputs`, dependencies, acceptance criteria, source anchors, and developer source-read authorization.
 - The planner returns paths only.
 
 ## architect-agent
@@ -30,6 +30,8 @@ Purpose: general implementation fallback when no specialist fits.
 Quality bar:
 
 - Keep changes scoped to assigned task files.
+- Check task package completeness before implementation; return `NEEDS_TASK_CLARIFICATION` instead of guessing from a vague task.
+- Read original requirements only when authorized by task-level source anchors.
 - Write or update focused tests when risk warrants it.
 - Produce a dev manifest with changed paths, verification commands, required output status, and known limits.
 

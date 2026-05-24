@@ -68,11 +68,41 @@ Every task must include:
 - `required_testers`
 - `required_outputs`
 - `acceptance_criteria`
+- `source_requirements_path`
+- `source_anchors`
+- `developer_may_read_source_requirements`
+- `uncertainties`
 - `dependencies`
 
 Default `recommended_agent`: `development-agent`.
 
 Default `required_testers`: `tester-code-quality`, `tester-runtime-effect`.
+
+## Task Package Completeness
+
+Planner must not compress long requirements into vague task summaries. Every generated `task.md` must be a self-contained task package containing:
+
+- goal and scope
+- relevant requirement anchors
+- material paths
+- acceptance criteria
+- expected output paths
+- uncertainty list
+- developer source-read authorization
+
+For long requirements, do not copy the full requirement into every task. Use anchors:
+
+```yaml
+SOURCE_REQUIREMENTS_PATH: .agent-work/input/project-requirements.md
+DEVELOPER_MAY_READ_SOURCE_REQUIREMENTS: true
+SOURCE_ANCHORS:
+  - anchor_id: REQ-001
+    must_read: true
+    locator: "section title, keyword, page id, paragraph description, or line hint"
+    reason: "why this source text is needed for this task"
+```
+
+If a task can be completed from `task.md` alone, set `DEVELOPER_MAY_READ_SOURCE_REQUIREMENTS: false` and still include the relevant source requirement details in the task package.
 
 ## Planner Agent Choices
 
