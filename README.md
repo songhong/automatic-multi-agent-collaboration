@@ -50,6 +50,18 @@ The workflow uses `.agent-work/` as the control plane:
 
 ## Role Model
 
+Both platform folders include the role definitions needed to run the workflow:
+
+```text
+claude/
+  agents/
+  skills/multi-agent-pipeline-v3/
+
+codex/
+  agents/
+  skills/multi-agent-pipeline-v3/
+```
+
 Planning roles:
 
 - `project-planner`: creates plans, task queues, batches, and tester selection.
@@ -115,6 +127,8 @@ Install or copy `codex/skills/multi-agent-pipeline-v3` into:
 ~/.codex/skills/multi-agent-pipeline-v3
 ```
 
+For the full local project workflow, also copy `codex/agents` into the project-level Codex agent directory used by your environment.
+
 Restart Codex, then invoke:
 
 ```text
@@ -125,7 +139,7 @@ The Codex version uses Codex skill names such as `superpowers:*`, `vercel:*`, `d
 
 ## Using The Claude Skill
 
-Copy `claude/skills/multi-agent-pipeline-v3` into the Claude skills directory used by your Claude Code environment, then invoke the skill from Claude.
+Copy both `claude/agents` and `claude/skills/multi-agent-pipeline-v3` into the Claude configuration used by your Claude Code environment, then invoke the skill from Claude.
 
 The Claude version is tuned for WSL Claude Code and its `.claude/` paths.
 
