@@ -1,0 +1,4 @@
+interface:
+  display_name: "Multi-Agent Pipeline v3"
+  short_description: "Coordinate planning, implementation, testing, repair, and release through path-only handoffs."
+  default_prompt: "Use $multi-agent-pipeline-v3 to run this project with staged planning, delegated work, testing, and repair loops."
