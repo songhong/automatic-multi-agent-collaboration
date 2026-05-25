@@ -167,3 +167,9 @@ Every initial or revised plan must pass `plan-reviewer` before it is shown to th
 Coordinator reads only `.agent-work/plan-reviews/plan-review-v<N>/result.json`. If review FAILS, coordinator resumes the same `project-planner` and passes `PLAN_REVIEW_REPORT_PATH` and `PLAN_REVIEW_RESULT_PATH`. Maximum 3 plan review repair attempts; then stop for human review.
 
 A plan that is only a module list or short bullet checklist must fail plan review.
+
+
+
+## Reference Material Routing
+
+When the user says to reference, read, view, use, combine, or follow material files, coordinator routes the instruction to `project-planner` by path and must not open the material body. Handoff includes `PROJECT_REQUIREMENTS_PATH`, `MATERIALS_MANIFEST_PATH`, and `USER_MATERIAL_AUTHORIZATION: user allowed planner to reference listed material contents`.

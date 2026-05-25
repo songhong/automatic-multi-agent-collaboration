@@ -140,6 +140,17 @@ If plan review PASS: return plan paths/status to the user.
 
 If plan review FAIL: resume the same `project-planner` instance and pass `PLAN_REVIEW_REPORT_PATH` and `PLAN_REVIEW_RESULT_PATH`. Do not start a new planner. Maximum 3 plan review repair attempts; then write human-review path and stop.
 
+
+## Business Payload Read Guard
+
+Before every `Read` or shell text-inspection command, classify the target path. If the path is not a pipeline reference or explicit control-plane file, treat it as business payload and do not read it.
+
+User permission to `??`, `?`, `??`, `??`, `??`, `??`, or `?` material files authorizes `project-planner`/authorized child agents, not coordinator. Coordinator may only record material metadata and pass paths.
+
+Allowed metadata commands for user materials: `ls`, `stat`, `Get-Item`, `Get-ChildItem`, and `Test-Path`. Forbidden commands for user materials: `Read`, `cat`, `type`, `Get-Content`, `head`, `tail`, `sed`, `grep`, `rg`, and `Select-String`.
+
+If you accidentally read user material body text, stop immediately and write `.agent-work/human-review/coordinator-read-violation.md` with the path and tool name only; do not include the content read.
+
 """
 
 

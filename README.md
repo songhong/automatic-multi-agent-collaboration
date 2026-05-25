@@ -170,3 +170,7 @@ Planner remains the business-understanding role. The coordinator routes paths, q
 ## Plan Reviewer Quality Gate
 
 The pipeline includes a `plan-reviewer` agent that checks planner output before it reaches the user. It rejects shallow module-list plans, missing user-question readiness, weak task packages, missing source anchors, poor tester selection, and absent quality gates. Coordinator reads only plan review result JSON and sends failure report paths back to the same planner.
+
+## Coordinator Material No-Read Boundary
+
+When the user says materials may be referenced or read, that permission belongs to planner/reviewer/worker roles, not the coordinator. The coordinator records material paths and metadata only, sets `content_read_by_coordinator: false`, and passes the manifest to `project-planner`.

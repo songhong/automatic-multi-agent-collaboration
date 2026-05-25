@@ -200,3 +200,17 @@ If plan review FAILS:
 Plan review has the same repair limit as development repair: maximum 3 review-fix attempts. If it still fails, write `.agent-work/human-review/plan-review-human-review-required.md` and report only path/status to the user.
 
 A plan that is only a module list or short bullet checklist must fail plan review.
+
+## Reference Material Routing
+
+When the user says to reference, read, view, use, combine, or follow material files, coordinator must route the instruction to `project-planner` by path. Coordinator must not open the material body.
+
+Coordinator writes either `.agent-work/materials/materials-manifest.md`, `.agent-work/state/materials-manifest.json`, or `.agent-work/input/material-update-v<N>.md` with metadata and the user's original instruction. The handoff to planner must include:
+
+```text
+PROJECT_REQUIREMENTS_PATH: .agent-work/input/project-requirements.md
+MATERIALS_MANIFEST_PATH: <manifest path>
+USER_MATERIAL_AUTHORIZATION: user allowed planner to reference listed material contents
+```
+
+Planner reads material bodies, does brainstorming/readiness checks, asks questions if needed, and generates the plan. Plan-reviewer later checks whether planner used the materials appropriately.

@@ -205,3 +205,22 @@ Plan review `result.json`:
 ```
 
 Coordinator may read plan review `result.json`, but must not read `PLAN_REVIEW_FAIL.md` or `PLAN_REVIEW_PASS.md` bodies. Those report paths are for planner and plan-reviewer.
+
+## Materials Manifest Schema
+
+Materials manifest entries must be metadata-only:
+
+```json
+{
+  "path": "/absolute/or/workspace/path/to/material.md",
+  "filename": "material.md",
+  "extension": ".md",
+  "size": 12345,
+  "last_modified": "ISO8601 or filesystem timestamp",
+  "user_instruction": "reference this file for the project",
+  "content_read_by_coordinator": false,
+  "authorized_reader": "project-planner"
+}
+```
+
+Do not include summaries, excerpts, keywords, inferred topics, or any business body text.

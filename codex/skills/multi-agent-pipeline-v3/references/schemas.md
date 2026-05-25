@@ -97,3 +97,9 @@ Plan review result path: `.agent-work/plan-reviews/plan-review-v<N>/result.json`
 Plan review `result.json` must include `agent_name`, `agent_id`, `plan_version`, `review_attempt`, `status`, `issue_count`, `blocking_issue_count`, `major_issue_count`, `needs_planner_rewrite`, `review_report_path`, `failed_sections`, `planner_agent_to_resume`, and `confidence`.
 
 Coordinator may read the result JSON only, not the review report body.
+
+
+
+## Materials Manifest Schema
+
+Materials manifest entries must be metadata-only: `path`, `filename`, `extension`, `size`, `last_modified`, `user_instruction`, `content_read_by_coordinator: false`, and `authorized_reader: project-planner`. Do not include summaries, excerpts, keywords, inferred topics, or body text.

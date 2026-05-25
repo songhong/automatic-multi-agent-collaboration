@@ -9,6 +9,7 @@ allowed-tools: Agent(project-planner, plan-reviewer, architect-agent, developmen
 本 skill 是轻量入口。详细协议按阶段读取 `references/`，避免每次启动加载全量流程。
 
 ## Core Rules
+- Reference-material no-read rule: when the user says `??`, `????`, `????`, `?????`, `??????`, `??????`, `????`, `??????`, or `??????`, the authorization is for `project-planner` and authorized child agents, not for coordinator. Coordinator records only paths and metadata.
 
 - 运行环境以 WSL Claude Code 为准，只使用 `.claude/agents/`、`.claude/skills/`、`.agent-work/`。
 - 主 agent 只调度、写日志、汇报进度、维护控制面文件；不得读需求、计划、任务、代码、测试报告正文。
@@ -95,3 +96,9 @@ skill-creator
 - Plan reviewer rubric: `references/plan-review-rubric.md`
 
 Plan quality gate: every initial/revised plan must be reviewed by `plan-reviewer`; FAIL returns only paths to the same planner for revision.
+
+## Coordinator Material Read Guard
+
+Coordinator must not read user material bodies during initialization or later routing. Allowed material inspection is metadata only: path, filename, extension, size, last modified time, and existence. Forbidden on user materials: `Read`, `cat`, `type`, `Get-Content`, `head`, `tail`, `sed`, `grep`, `rg`, and `Select-String`.
+
+If material content was accidentally read by coordinator, stop the run, write `.agent-work/human-review/coordinator-read-violation.md`, and do not use the read content for planning.

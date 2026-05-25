@@ -54,3 +54,9 @@ Confirm, without reading payload bodies:
 ## Configured Agents
 
 The full pipeline includes 19 agents, including `plan-reviewer`. Experience initialization should include one cache file for every configured agent, including `.agent-work/experience/plan-reviewer.md`.
+
+
+
+## Material Discovery Is Metadata Only
+
+During initialization, coordinator may discover user materials but must not read their bodies. Allowed inspection is path, filename, extension, size, last modified time, and existence only. User phrases such as reference/read/view/use material files authorize planner, not coordinator. Write manifest entries with `content_read_by_coordinator: false` and `authorized_reader: project-planner`.

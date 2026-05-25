@@ -132,6 +132,27 @@ Dispatch policy:
 
 Premium review failures use the normal repair ownership rule: original developer repairs, original tester retests, three failed repair attempts stop for human review.
 
+## Reference Material No-Read Rule
+
+User phrases such as `参考`, `参考内容`, `可以参考`, `看这个文件`, `阅读这个文件`, `按照文件内容`, `依据材料`, `用这几个文件`, or `结合这些文档` authorize the business-reading agents, not you. They do not permit coordinator to read material bodies.
+
+During initialization and material updates, you may inspect only path metadata: path, filename, extension, size, last modified time, and existence. You must not use `Read`, `cat`, `type`, `Get-Content`, `head`, `tail`, `sed`, `grep`, `rg`, or `Select-String` on user requirement/material files. This remains true when `.agent-work` does not exist yet.
+
+For every user-provided or discovered material, write manifest metadata only:
+
+```text
+path:
+filename:
+extension:
+size:
+last_modified:
+user_instruction:
+content_read_by_coordinator: false
+authorized_reader: project-planner
+```
+
+Then hand off `PROJECT_REQUIREMENTS_PATH`, `MATERIALS_MANIFEST_PATH`, and `USER_MATERIAL_AUTHORIZATION: user allowed planner to reference listed material contents` to `project-planner`. If you accidentally read business material content, immediately stop the run, write `.agent-work/human-review/coordinator-read-violation.md`, and do not use the read content for planning.
+
 ## Plan Review Gate Dispatch
 
 After `project-planner` returns `PLAN_PATH` and `TASK_QUEUE_PATH`, do not show them to the user yet. First dispatch or resume `plan-reviewer` with only these paths: `PROJECT_REQUIREMENTS_PATH`, `MATERIALS_MANIFEST_PATH`, `PLAN_PATH`, `TASK_QUEUE_PATH`, `PLANNING_READINESS_PATH`, `PLAN_QUALITY_CHECK_PATH`, and optional `ASK_USER_QUESTIONS_PATH`.
@@ -141,3 +162,13 @@ Read only the plan-reviewer `result.json`. Do not read `PLAN_REVIEW_PASS.md` or 
 If plan review PASS: return plan paths/status to the user.
 
 If plan review FAIL: resume the same `project-planner` instance and pass `PLAN_REVIEW_REPORT_PATH` and `PLAN_REVIEW_RESULT_PATH`. Do not start a new planner. Maximum 3 plan review repair attempts; then write human-review path and stop.
+
+## Business Payload Read Guard
+
+Before every `Read` or shell text-inspection command, classify the target path. If the path is not a pipeline reference or explicit control-plane file, treat it as business payload and do not read it.
+
+User permission to `??`, `?`, `??`, `??`, `??`, `??`, or `?` material files authorizes `project-planner`/authorized child agents, not coordinator. Coordinator may only record material metadata and pass paths.
+
+Allowed metadata commands for user materials: `ls`, `stat`, `Get-Item`, `Get-ChildItem`, and `Test-Path`. Forbidden commands for user materials: `Read`, `cat`, `type`, `Get-Content`, `head`, `tail`, `sed`, `grep`, `rg`, and `Select-String`.
+
+If you accidentally read user material body text, stop immediately and write `.agent-work/human-review/coordinator-read-violation.md` with the path and tool name only; do not include the content read.

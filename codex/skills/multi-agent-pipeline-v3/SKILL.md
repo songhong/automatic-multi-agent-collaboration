@@ -101,3 +101,7 @@ Do not assume Claude/Anthropic-only skills such as `frontend-design`, `webapp-te
 - The final report path is `.agent-work/final/final-pipeline-summary.md`.
 
 Plan quality gate: every candidate initial/revised plan must be reviewed by `plan-reviewer`; FAIL routes report paths back to the same planner.
+
+## Coordinator Material Read Guard
+
+Reference/read/use material-file wording from the user authorizes planner or child agents, not coordinator. Coordinator records only metadata and never reads material bodies. Forbidden on user materials: `Read`, `cat`, `type`, `Get-Content`, `head`, `tail`, `sed`, `grep`, `rg`, and `Select-String`.

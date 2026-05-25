@@ -87,3 +87,26 @@ plan-reviewer
 ```
 
 If an agent file is missing, report the missing path and stop before starting the pipeline.
+
+## Material Discovery Is Metadata Only
+
+During initialization, coordinator may discover user materials but must not read their bodies. This applies even when `.agent-work` does not exist yet and materials are in the workspace root.
+
+Allowed metadata:
+- path
+- filename
+- extension
+- size
+- last modified time
+- existence
+
+Forbidden on user materials:
+- `Read(<user material path>)`
+- `cat`, `type`, `Get-Content`
+- `head`, `tail`, `sed`
+- `grep`, `rg`, `Select-String`
+- summaries, keyword extraction, content classification, or body snippets
+
+User phrases such as `??`, `????`, `????`, `?????`, `??????`, `??????`, `????`, `??????`, or `??????` mean the coordinator should record paths and authorization for `project-planner`; they are not coordinator read permission.
+
+Write materials manifest entries with `content_read_by_coordinator: false` and `authorized_reader: project-planner`.
