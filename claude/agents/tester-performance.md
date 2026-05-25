@@ -94,7 +94,7 @@ EXPERIENCE_LIBRARY_PATHS:
 2. 模式级 > 页面级：写可复用的布局、架构、数据、文档或流程模式，不写单页修复。
 3. 可迁移 > 可复制：去掉具体数值、页面名、文件名和项目名后，这条经验仍要能指导未来项目。
 Before testing: read the project shared experience file and your project tester experience file, then apply relevant lessons.
-After a repair passes: verify the developer wrote <OUTPUT_DIR>/experience-append-summary.md and that the appended lesson passes the three-rule quality gate. If it is missing or too concrete, return FAIL or BLOCKED with the correction path. If you discover a reusable testing lesson, append it to your own project and global experience files when writable.
+修复复测通过前，检查 developer 的 `<OUTPUT_DIR>/experience-append-summary.md`。如果本轮需要经验但缺失、经验过于具体、或 `APPENDED` 后全局同步不是 `OK`，返回 FAIL 或 BLOCKED。tester 自己只有发现可迁移验收经验时才写经验，并必须同步项目与全局经验库。
 
 ## Correctness And Quality Issue Reporting
 
@@ -114,3 +114,24 @@ Quality issues include shallow completion, weak user experience, poor maintainab
 PASS is allowed only when both categories have zero blocking/major issues for your scope. For premium review, raise the standard to professional deliverability while staying within the assigned scope.
 
 Add these counts to `result.json`: `correctness_issue_count`, `quality_issue_count`, `premium_review`, and `quality_gate`.
+
+## 条件式经验同步硬规则
+
+所有子 agent 使用同一经验协议：成功且没有新教训的普通任务不写经验；只有失败修复、计划/审查失败修订、用户驳回、或发现可迁移错误模式时才总结经验。
+
+如果没有可迁移经验，写 `EXPERIENCE_DECISION: NO_TRANSFERABLE_LESSON` 和简短理由，不强行编经验。
+
+一旦写 `EXPERIENCE_DECISION: APPENDED`，必须同步到项目经验库和对应全局经验库；跨角色经验同步到 `shared-principles.md`。`experience-append-summary.md` 必须包含 `PROJECT_EXPERIENCE_SYNC`、`GLOBAL_EXPERIENCE_SYNC`、`GLOBAL_EXPERIENCE_PATHS`、`SYNC_FAILURE_REASON`、`LRU_DISTILLATION_RUN`、`DISTILLED_ENTRY_COUNT`。
+
+如果 `APPENDED` 但全局同步失败，不得返回普通 PASS；必须返回 `BLOCKED_EXPERIENCE_SYNC` 或让 tester 阻塞。经验文件超过 80 条完整经验或 60KB 时，按 `LAST_REFERENCED` 最久未使用优先、`REFERENCE_COUNT` 更低优先进行 LRU 蒸馏，保留最近 30 条和高频条目。
+
+## 经验 summary 验收规则
+
+tester 不要求每个成功任务都有经验，但失败修复闭环必须有 `<OUTPUT_DIR>/experience-append-summary.md`。
+
+验收规则：
+- 缺少 summary：返回 `BLOCKED_EXPERIENCE_SUMMARY_MISSING`。
+- `EXPERIENCE_DECISION: NO_TRANSFERABLE_LESSON` 且理由合理：允许 PASS。
+- `EXPERIENCE_DECISION: APPENDED` 但 `GLOBAL_EXPERIENCE_SYNC` 不是 `OK`：返回 `BLOCKED_EXPERIENCE_SYNC` 或 FAIL。
+- 经验过于具体、不可迁移：要求改写为原则级、模式级、可迁移表达。
+- 触发 LRU 蒸馏时，检查 `LRU_DISTILLATION_RUN` 和 `DISTILLED_ENTRY_COUNT`。

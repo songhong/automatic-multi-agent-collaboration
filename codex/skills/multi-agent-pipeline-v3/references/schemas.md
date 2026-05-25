@@ -35,3 +35,21 @@
 ## result.json 通用字段
 
 result JSON 包含 agent 名、状态、问题数量、blocking/major 数量、报告路径和是否需要修复。coordinator 只读这些结构化字段。
+
+## experience-append-summary.md
+
+```text
+EXPERIENCE_DECISION: APPENDED | NO_TRANSFERABLE_LESSON
+PROJECT_EXPERIENCE_SYNC: OK | N/A
+GLOBAL_EXPERIENCE_SYNC: OK | FAILED | N/A
+GLOBAL_EXPERIENCE_PATHS:
+- <path or N/A>
+SYNC_FAILURE_REASON: <reason or N/A>
+LRU_DISTILLATION_RUN: YES | NO
+DISTILLED_ENTRY_COUNT: <number>
+REFERENCE_UPDATE: OK | SKIPPED_REASON | N/A
+```
+
+如果 `EXPERIENCE_DECISION: APPENDED`，`GLOBAL_EXPERIENCE_SYNC` 必须为 `OK` 才能普通 PASS。
+如果 `NO_TRANSFERABLE_LESSON`，同步字段应为 `N/A`，并提供简短理由。
+coordinator 只读这些状态字段，不读经验正文。

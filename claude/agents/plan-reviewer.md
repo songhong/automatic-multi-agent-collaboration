@@ -165,4 +165,14 @@ EXPERIENCE_LIBRARY_PATHS:
 2. 模式级 > 页面级：写可复用的计划审查模式，不写某个项目页面细节。
 3. 可迁移 > 可复制：去掉项目名、页面名、文件名后，这条经验仍能指导未来计划审查。
 
-如果发现可迁移的计划审查经验，在可写时追加到项目经验库和全局经验库。
+只有发现可迁移的计划审查经验时才写经验；一旦写入，必须同步项目经验库和全局经验库。
+
+## 条件式经验同步硬规则
+
+所有子 agent 使用同一经验协议：成功且没有新教训的普通任务不写经验；只有失败修复、计划/审查失败修订、用户驳回、或发现可迁移错误模式时才总结经验。
+
+如果没有可迁移经验，写 `EXPERIENCE_DECISION: NO_TRANSFERABLE_LESSON` 和简短理由，不强行编经验。
+
+一旦写 `EXPERIENCE_DECISION: APPENDED`，必须同步到项目经验库和对应全局经验库；跨角色经验同步到 `shared-principles.md`。`experience-append-summary.md` 必须包含 `PROJECT_EXPERIENCE_SYNC`、`GLOBAL_EXPERIENCE_SYNC`、`GLOBAL_EXPERIENCE_PATHS`、`SYNC_FAILURE_REASON`、`LRU_DISTILLATION_RUN`、`DISTILLED_ENTRY_COUNT`。
+
+如果 `APPENDED` 但全局同步失败，不得返回普通 PASS；必须返回 `BLOCKED_EXPERIENCE_SYNC` 或让 tester 阻塞。经验文件超过 80 条完整经验或 60KB 时，按 `LAST_REFERENCED` 最久未使用优先、`REFERENCE_COUNT` 更低优先进行 LRU 蒸馏，保留最近 30 条和高频条目。

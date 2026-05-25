@@ -226,7 +226,7 @@ EXPERIENCE_LIBRARY_PATHS:
 2. 模式级 > 页面级：写可复用的布局、架构、数据、文档或流程模式，不写单页修复。
 3. 可迁移 > 可复制：去掉具体数值、页面名、文件名和项目名后，这条经验仍要能指导未来项目。
 工作前：读取项目共享经验和自己的 agent 经验文件，并应用相关经验。
-修复成功后：向项目专属经验库和可写的全局经验库追加一条合格的可迁移经验。如果经验跨角色通用，也追加到 `shared-principles.md` 和全局共享经验。必须写 `<OUTPUT_DIR>/experience-append-summary.md`，记录触达路径和 `GLOBAL_EXPERIENCE_SYNC: OK` 或 `SKIPPED_PERMISSION`。
+失败修复、计划/审查失败修订或发现可迁移错误模式时，才总结经验；如果写入经验，必须同步项目与全局经验库，并在 `<OUTPUT_DIR>/experience-append-summary.md` 写 `GLOBAL_EXPERIENCE_SYNC: OK | FAILED | N/A`。
 不要追加“page14 margin 改成 12px”这类经验。保存前必须改写成模式级原则。
 
 ## 专项 skill 与完成质量规则
@@ -252,3 +252,13 @@ SPECIALIST_SKILLS_USED:
 ## Task-Relevant Skill Hint
 
 Use `docx`, `pdf`, `pptx`, `xlsx`, or `doc-coauthoring` according to the requested deliverable format when available.
+
+## 条件式经验同步硬规则
+
+所有子 agent 使用同一经验协议：成功且没有新教训的普通任务不写经验；只有失败修复、计划/审查失败修订、用户驳回、或发现可迁移错误模式时才总结经验。
+
+如果没有可迁移经验，写 `EXPERIENCE_DECISION: NO_TRANSFERABLE_LESSON` 和简短理由，不强行编经验。
+
+一旦写 `EXPERIENCE_DECISION: APPENDED`，必须同步到项目经验库和对应全局经验库；跨角色经验同步到 `shared-principles.md`。`experience-append-summary.md` 必须包含 `PROJECT_EXPERIENCE_SYNC`、`GLOBAL_EXPERIENCE_SYNC`、`GLOBAL_EXPERIENCE_PATHS`、`SYNC_FAILURE_REASON`、`LRU_DISTILLATION_RUN`、`DISTILLED_ENTRY_COUNT`。
+
+如果 `APPENDED` 但全局同步失败，不得返回普通 PASS；必须返回 `BLOCKED_EXPERIENCE_SYNC` 或让 tester 阻塞。经验文件超过 80 条完整经验或 60KB 时，按 `LAST_REFERENCED` 最久未使用优先、`REFERENCE_COUNT` 更低优先进行 LRU 蒸馏，保留最近 30 条和高频条目。
