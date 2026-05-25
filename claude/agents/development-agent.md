@@ -250,8 +250,8 @@ EXPERIENCE_APPEND_PATH: <OUTPUT_DIR>/experience-append-summary.md
 EXPERIENCE_LIBRARY_PATHS:
 - PROJECT_SHARED_EXPERIENCE: .agent-work/experience/shared-principles.md
 - PROJECT_AGENT_EXPERIENCE: .agent-work/experience/development-agent.md
-- CLAUDE_GLOBAL_EXPERIENCE: $globalClaude
-- CODEX_GLOBAL_EXPERIENCE: $globalCodex
+- CLAUDE_GLOBAL_EXPERIENCE: /home/zhuyu/.claude/agent-experience/development-agent.md
+- CODEX_GLOBAL_EXPERIENCE: C:/Users/zhuyu/.codex/agent-experience/development-agent.md
 
 Experience quality gate:
 1. Principle over number: write why the decision was wrong, not the literal value changed.

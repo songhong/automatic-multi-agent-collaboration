@@ -136,8 +136,8 @@ DISAGREED_ESCALATED_COUNT: <升级的 DISAGREED 问题数>
 EXPERIENCE_LIBRARY_PATHS:
 - PROJECT_SHARED_EXPERIENCE: .agent-work/experience/shared-principles.md
 - PROJECT_AGENT_EXPERIENCE: .agent-work/experience/tester-runtime-effect.md
-- CLAUDE_GLOBAL_EXPERIENCE: $globalClaude
-- CODEX_GLOBAL_EXPERIENCE: $globalCodex
+- CLAUDE_GLOBAL_EXPERIENCE: /home/zhuyu/.claude/agent-experience/tester-runtime-effect.md
+- CODEX_GLOBAL_EXPERIENCE: C:/Users/zhuyu/.codex/agent-experience/tester-runtime-effect.md
 
 Experience quality gate:
 1. Principle over number: write why the decision was wrong, not the literal value changed.

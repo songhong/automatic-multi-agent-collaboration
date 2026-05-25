@@ -69,6 +69,40 @@ color: blue
 }
 ```
 
+
+## Planner Rejection Learning
+
+Before `initial_plan`, `revise_plan`, or any task-package clarification repair, read:
+- `.agent-work/experience/shared-principles.md`
+- `.agent-work/experience/project-planner.md`
+- `references/experience.md`
+
+Treat these as planner failure signals:
+- the user rejects the plan, says it is too simple, incomplete, wrong, or missing requirements
+- the user asks to carefully, completely, or again read the task/requirement/material files
+- a developer returns `NEEDS_TASK_CLARIFICATION`
+- a tester reports vague task packages, missing acceptance criteria, weak source anchors, or wrong tester selection
+
+After every `revise_plan` caused by one of those signals, write `.agent-work/plans/planner-experience-decision-v<N>.md` before returning. The file must contain:
+
+```text
+EXPERIENCE_DECISION: APPENDED | NO_TRANSFERABLE_LESSON
+REJECTION_REASON_PATTERN: <why the old plan failed as a pattern>
+WHAT_WAS_TOO_SIMPLE: <planning compression or omission pattern, or N/A>
+MISSED_REQUIREMENT_PATTERN: <requirement-reading failure pattern, or N/A>
+TASK_PACKAGE_FIX_PATTERN: <task-package improvement pattern, or N/A>
+SOURCE_ANCHOR_FIX_PATTERN: <anchor improvement pattern, or N/A>
+TESTER_SELECTION_FIX_PATTERN: <tester-selection improvement pattern, or N/A>
+EXPERIENCE_APPEND_PATHS:
+- .agent-work/experience/project-planner.md
+- /home/zhuyu/.claude/agent-experience/project-planner.md or C:/Users/zhuyu/.codex/agent-experience/project-planner.md
+GLOBAL_EXPERIENCE_SYNC: OK | SKIPPED_PERMISSION | N/A
+```
+
+If the rejection exposes a transferable planning lesson, append it to `.agent-work/experience/project-planner.md` and the writable global planner experience file. Do not write project-specific notes such as `task-016 was too short`; rewrite them as planning principles such as `Long requirements should be decomposed into task packages with goal, scope, acceptance criteria, source anchors, and output paths rather than only deliverable titles.`
+
+Return `PLANNER_EXPERIENCE_DECISION_PATH` together with plan and task queue paths. Do not return the decision body to the coordinator.
+
 ## MODE: initial_plan
 
 收到此模式时，你需要：
@@ -142,6 +176,7 @@ AGENT_NAME: project-planner
 AGENT_ID: <AGENT_ID>
 PLAN_PATH: .agent-work/plans/plan-v1.md
 TASK_QUEUE_PATH: .agent-work/tasks/task-queue-v1.json
+PLANNER_EXPERIENCE_DECISION_PATH: N/A
 STATUS: WAITING_USER_CONFIRMATION
 ```
 
@@ -168,6 +203,7 @@ AGENT_NAME: project-planner
 AGENT_ID: <AGENT_ID>
 PLAN_PATH: .agent-work/plans/plan-v<N>.md
 TASK_QUEUE_PATH: .agent-work/tasks/task-queue-v<N>.json
+PLANNER_EXPERIENCE_DECISION_PATH: .agent-work/plans/planner-experience-decision-v<N>.md
 STATUS: WAITING_USER_CONFIRMATION
 ```
 
@@ -283,8 +319,8 @@ FINAL_SUMMARY_INPUT_PATH: .agent-work/plans/planner-final-summary.md
 EXPERIENCE_LIBRARY_PATHS:
 - PROJECT_SHARED_EXPERIENCE: .agent-work/experience/shared-principles.md
 - PROJECT_AGENT_EXPERIENCE: .agent-work/experience/project-planner.md
-- CLAUDE_GLOBAL_EXPERIENCE: $globalClaude
-- CODEX_GLOBAL_EXPERIENCE: $globalCodex
+- CLAUDE_GLOBAL_EXPERIENCE: /home/zhuyu/.claude/agent-experience/project-planner.md
+- CODEX_GLOBAL_EXPERIENCE: C:/Users/zhuyu/.codex/agent-experience/project-planner.md
 
 Experience quality gate:
 1. Principle over number: write why the decision was wrong, not the literal value changed.

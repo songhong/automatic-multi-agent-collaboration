@@ -43,6 +43,21 @@ Coordinator steps:
 
 The coordinator must not open, summarize, quote, or inspect the requirement body, task body, plan body, or material body while handling dissatisfaction.
 
+## Planner Rejection Learning
+
+When the user rejects a plan, says it is too simple, asks the planner to reread the requirements, or when a developer/tester reports that task packages are too vague, `project-planner` must treat the event as a planning feedback signal.
+
+For every such `revise_plan`, planner must:
+
+1. Reread `PROJECT_REQUIREMENTS_PATH`, `MATERIALS_MANIFEST_PATH`, `PREVIOUS_PLAN_PATH`, `PREVIOUS_TASK_QUEUE_PATH`, and `USER_FEEDBACK_PATH`.
+2. Rewrite the plan and task queue with stronger task packages, source anchors, acceptance criteria, output paths, and tester selection.
+3. Write `.agent-work/plans/planner-experience-decision-v<N>.md`.
+4. Return `PLANNER_EXPERIENCE_DECISION_PATH` together with `PLAN_PATH` and `TASK_QUEUE_PATH`.
+
+The decision file must include `EXPERIENCE_DECISION: APPENDED | NO_TRANSFERABLE_LESSON`. If the old plan failed because of a transferable planning pattern, append a principle-level lesson to `.agent-work/experience/project-planner.md` and to the writable global `project-planner.md` experience file.
+
+Planner experience must be about planning patterns, not project facts. For example, write `Long requirements should be decomposed into task packages with goal, scope, acceptance criteria, source anchors, and output paths rather than only deliverable titles`, not `task-016 was too short`.
+
 ## Task Package Completeness
 
 Planner must not compress long requirements into vague task summaries. Every generated `task.md` must be a self-contained task package that lets the assigned developer work without guessing.

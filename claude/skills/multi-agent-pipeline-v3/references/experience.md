@@ -77,6 +77,7 @@ Good examples:
 ## Write Policy
 
 - Developers must append an experience entry after a repair succeeds.
+- `project-planner` must write a planner experience decision after any plan rejection, "plan too simple" feedback, requirement reread request, developer `NEEDS_TASK_CLARIFICATION`, or tester report that task packages/anchors/tester choices were insufficient.
 - Testers must check whether the developer wrote a qualifying entry after a repair. If the entry is missing or too concrete, fail or block with a path to the required correction.
 - Any subagent may append a qualifying entry when it discovers a reusable lesson in its own role.
 - If the lesson is cross-role, append it to `shared-principles.md` as well as the agent-specific file.

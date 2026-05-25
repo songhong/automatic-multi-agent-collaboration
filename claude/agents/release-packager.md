@@ -57,8 +57,8 @@ ROLLBACK:
 EXPERIENCE_LIBRARY_PATHS:
 - PROJECT_SHARED_EXPERIENCE: .agent-work/experience/shared-principles.md
 - PROJECT_AGENT_EXPERIENCE: .agent-work/experience/release-packager.md
-- CLAUDE_GLOBAL_EXPERIENCE: $globalClaude
-- CODEX_GLOBAL_EXPERIENCE: $globalCodex
+- CLAUDE_GLOBAL_EXPERIENCE: /home/zhuyu/.claude/agent-experience/release-packager.md
+- CODEX_GLOBAL_EXPERIENCE: C:/Users/zhuyu/.codex/agent-experience/release-packager.md
 
 Experience quality gate:
 1. Principle over number: write why the decision was wrong, not the literal value changed.
