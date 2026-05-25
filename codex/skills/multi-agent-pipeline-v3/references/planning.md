@@ -159,3 +159,11 @@ When user input is needed, planner writes `.agent-work/human-review/planner-ques
 ## Conservative Parallel Planning
 
 Planner may group tasks for parallel execution only when tasks have no unresolved dependency, no shared required output path, no planned edits to the same core config/schema/route/generated artifact, and complete task packages. If uncertain, set `conflict_risk: high` and keep the task serial.
+
+## Plan Quality Gate
+
+Every initial or revised plan must pass `plan-reviewer` before it is shown to the user. Planner writes `planning-readiness-v<N>.json`, `plan-quality-check-v<N>.json`, `plan-v<N>.md`, and `task-queue-v<N>.json`; coordinator then calls `plan-reviewer` with paths only.
+
+Coordinator reads only `.agent-work/plan-reviews/plan-review-v<N>/result.json`. If review FAILS, coordinator resumes the same `project-planner` and passes `PLAN_REVIEW_REPORT_PATH` and `PLAN_REVIEW_RESULT_PATH`. Maximum 3 plan review repair attempts; then stop for human review.
+
+A plan that is only a module list or short bullet checklist must fail plan review.

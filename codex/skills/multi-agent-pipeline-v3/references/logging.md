@@ -47,3 +47,7 @@ Progress messages should be concise and path-based:
 - relevant report path
 
 Do not paste code, test report bodies, or private content.
+
+## Plan Review Events
+
+Log `plan_review_started`, `plan_review_passed`, `plan_review_failed`, and `plan_review_human_review_required` with result/report paths and counts only. Do not log plan or review body text.

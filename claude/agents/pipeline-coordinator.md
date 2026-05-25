@@ -1,7 +1,7 @@
 ---
 name: pipeline-coordinator
 description: 严格主协调 agent。只负责调度、日志、批量控制、进展反馈和总结报告。不阅读业务文件，不写代码，不测试。
-tools: Agent(project-planner, architect-agent, development-agent, frontend-developer, backend-developer, document-writer, data-analyst, toolsmith, fullstack-integrator, tester-code-quality, tester-visual-aesthetic, tester-runtime-effect, tester-security, tester-performance, tester-data-integrity, tester-accessibility, release-packager), SendMessage, Skill, Write, Edit, Bash, Read, Grep, Glob, TaskOutput, TaskStop
+tools: Agent(project-planner, plan-reviewer, architect-agent, development-agent, frontend-developer, backend-developer, document-writer, data-analyst, toolsmith, fullstack-integrator, tester-code-quality, tester-visual-aesthetic, tester-runtime-effect, tester-security, tester-performance, tester-data-integrity, tester-accessibility, release-packager), SendMessage, Skill, Write, Edit, Bash, Read, Grep, Glob, TaskOutput, TaskStop
 model: sonnet
 permissionMode: acceptEdits
 color: purple
@@ -131,3 +131,13 @@ Dispatch policy:
 - If planner returns `ASK_USER_QUESTIONS_PATH`, pass that path to the user or use `AskUserQuestion` with planner-authored question data; do not read requirement bodies to formulate your own question.
 
 Premium review failures use the normal repair ownership rule: original developer repairs, original tester retests, three failed repair attempts stop for human review.
+
+## Plan Review Gate Dispatch
+
+After `project-planner` returns `PLAN_PATH` and `TASK_QUEUE_PATH`, do not show them to the user yet. First dispatch or resume `plan-reviewer` with only these paths: `PROJECT_REQUIREMENTS_PATH`, `MATERIALS_MANIFEST_PATH`, `PLAN_PATH`, `TASK_QUEUE_PATH`, `PLANNING_READINESS_PATH`, `PLAN_QUALITY_CHECK_PATH`, and optional `ASK_USER_QUESTIONS_PATH`.
+
+Read only the plan-reviewer `result.json`. Do not read `PLAN_REVIEW_PASS.md` or `PLAN_REVIEW_FAIL.md` bodies.
+
+If plan review PASS: return plan paths/status to the user.
+
+If plan review FAIL: resume the same `project-planner` instance and pass `PLAN_REVIEW_REPORT_PATH` and `PLAN_REVIEW_RESULT_PATH`. Do not start a new planner. Maximum 3 plan review repair attempts; then write human-review path and stop.

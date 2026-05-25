@@ -165,3 +165,8 @@ The Claude version is tuned for WSL Claude Code and its `.claude/` paths.
 This pipeline now separates normal completion checks from premium review. Every task uses `completion_quality_gate` for correctness, requirement coverage, completeness, runnable output, and maintainability. Key batches and final delivery can enable `premium_review_gate` for professional polish, consistency, final-user usability, documentation readiness, visual quality, performance, accessibility, and cross-deliverable coherence.
 
 Planner remains the business-understanding role. The coordinator routes paths, questions, status, and control-plane JSON only; it does not read business bodies. Planner can use brainstorming-style clarification and approach comparison before producing task packages. Specialist agents load skills on demand to reduce token use.
+
+
+## Plan Reviewer Quality Gate
+
+The pipeline includes a `plan-reviewer` agent that checks planner output before it reaches the user. It rejects shallow module-list plans, missing user-question readiness, weak task packages, missing source anchors, poor tester selection, and absent quality gates. Coordinator reads only plan review result JSON and sends failure report paths back to the same planner.

@@ -41,3 +41,20 @@ Use `TaskOutput` to poll child agents. If a child task exceeds the configured ti
 2. Log `agent_timeout`.
 3. Restart with `Agent()` logical Resume and full file paths.
 4. If the second attempt times out, turn the batch over to human review.
+
+## Plan Review Events
+
+Log plan review events without plan or review bodies:
+
+```json
+{
+  "stage": "planning",
+  "event": "plan_review_started | plan_review_passed | plan_review_failed | plan_review_human_review_required",
+  "agent_name": "plan-reviewer",
+  "agent_id": "<agent id or RUNTIME_UNKNOWN>",
+  "status": "running | pass | fail | blocked",
+  "paths": [".agent-work/plan-reviews/plan-review-v<N>/result.json"]
+}
+```
+
+If plan review fails, log only result/report paths and counts, never the review body.

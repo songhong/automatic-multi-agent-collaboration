@@ -31,6 +31,7 @@ This skill is the lightweight entrypoint for a Codex-oriented multi-agent workfl
 - Logs, status machine, progress reports: `references/logging.md`
 - Control-plane schemas: `references/schemas.md`
 - Agent and Codex skill matrix: `references/agent-skill-matrix.md`
+- Plan review rubric: `references/plan-review-rubric.md`
 - Agent experience libraries, three quality rules, and global sync: `references/experience.md`
 - Role prompts and quality bars: `references/roles.md`
 - Local fallback rubrics when a skill is unavailable: `references/rubrics.md`
@@ -59,7 +60,7 @@ These files may contain agent names, runtime ids when available, run ids, batch 
 
 1. Read `references/init.md` and initialize the run, logs, id cache, batch config, and materials manifest.
 2. Write the user's original request to `.agent-work/input/project-requirements.md`, then stop reading that body.
-3. Ask the planner role to generate a plan and return only plan paths. Share those paths with the user for confirmation.
+3. Ask the planner role to generate a candidate plan and return only plan paths. Run `plan-reviewer` on the returned paths; share plan paths with the user only after PASS.
 4. If the user requests plan changes, is dissatisfied, or asks to carefully/completely/re-read requirement, task, or material files, write feedback to `.agent-work/input/user-feedback-v<N>.md` and resume the same planner role; the coordinator must not read those bodies.
 5. After user approval, have the planner produce `.agent-work/state/current-batch-control.json`.
 6. Dispatch the selected worker/integrator/testers from the batch control file. Read only returned JSON/status files.
@@ -98,3 +99,5 @@ Do not assume Claude/Anthropic-only skills such as `frontend-design`, `webapp-te
 - Required output files exist and are non-empty.
 - All required testers are `PASS` or approved `SKIP`; failures go through the repair loop and stop after three attempts.
 - The final report path is `.agent-work/final/final-pipeline-summary.md`.
+
+Plan quality gate: every candidate initial/revised plan must be reviewed by `plan-reviewer`; FAIL routes report paths back to the same planner.

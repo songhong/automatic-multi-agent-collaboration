@@ -74,3 +74,8 @@ Agents should load specialist skills only when the current task needs them. Load
 - `release-packager`: use document/PDF/README-related skills only when producing or auditing those deliverables.
 
 If a named skill is unavailable at runtime, write `SKILL_UNAVAILABLE` in the evidence or report and continue with local rubrics where safe.
+
+## Plan Reviewer
+
+- `plan-reviewer`: reads requirement, materials, planner readiness, plan, and task queue paths; uses `plan-review-rubric.md`; writes plan review reports and result JSON; does not write plans or code.
+- Load `plan-review-rubric.md` only for plan review. Do not load developer/tester rubrics unless the plan specifically needs those quality dimensions.

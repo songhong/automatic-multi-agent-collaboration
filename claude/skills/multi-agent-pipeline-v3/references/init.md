@@ -83,6 +83,7 @@ tester-performance
 tester-data-integrity
 tester-accessibility
 release-packager
+plan-reviewer
 ```
 
 If an agent file is missing, report the missing path and stop before starting the pipeline.

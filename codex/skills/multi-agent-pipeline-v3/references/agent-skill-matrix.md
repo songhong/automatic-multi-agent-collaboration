@@ -54,3 +54,7 @@ Agents load specialist skills only when the current task needs them. Loading eve
 - Release packager uses document/PDF/README-related skills only for final delivery packaging or audit.
 
 If a skill is unavailable, record `SKILL_UNAVAILABLE` and continue with local rubrics where safe.
+
+## Plan Reviewer
+
+- `plan-reviewer`: checks planner readiness, plan depth, requirement/material coverage, task package completeness, source anchors, tester selection, quality gates, and whether the plan is only a shallow module list. It writes review reports and result JSON but does not write plans or code.

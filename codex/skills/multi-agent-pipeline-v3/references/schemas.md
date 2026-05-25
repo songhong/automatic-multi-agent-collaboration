@@ -87,3 +87,13 @@ Every task item must include:
 ```
 
 Every tester `result.json` must include `correctness_issue_count`, `quality_issue_count`, `premium_review`, and `quality_gate`.
+
+## Plan Review Schemas
+
+Planner readiness path: `.agent-work/plans/planning-readiness-v<N>.json`.
+Planner self-check path: `.agent-work/plans/plan-quality-check-v<N>.json`.
+Plan review result path: `.agent-work/plan-reviews/plan-review-v<N>/result.json`.
+
+Plan review `result.json` must include `agent_name`, `agent_id`, `plan_version`, `review_attempt`, `status`, `issue_count`, `blocking_issue_count`, `major_issue_count`, `needs_planner_rewrite`, `review_report_path`, `failed_sections`, `planner_agent_to_resume`, and `confidence`.
+
+Coordinator may read the result JSON only, not the review report body.

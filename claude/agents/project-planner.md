@@ -362,3 +362,15 @@ NON_GOALS:
 ```
 
 Set premium review for core user-facing screens, final reports, README/delivery documents, public demos, high-polish user requests, and final delivery candidates. Use conservative parallel groups only when tasks are independent, do not share output paths, and do not modify the same core config/schema/route/generated artifact.
+
+## Mandatory Readiness And Plan Quality Check
+
+Before every `initial_plan` or `revise_plan`, write `.agent-work/plans/planning-readiness-v<N>.json`.
+
+If readiness shows user input is needed, do not produce a final plan for confirmation. Write `.agent-work/human-review/planner-questions-v<N>.json` and return `ASK_USER_QUESTIONS_PATH` with `STATUS: NEEDS_USER_INPUT`.
+
+When producing a candidate plan, also write `.agent-work/plans/plan-quality-check-v<N>.json`. The check must prove the plan is not a shallow module list and includes success criteria, material mapping, approach comparison when relevant, architecture/data flow, module implementation details, dependencies, testing strategy, quality gates, premium review triggers, and deliverables.
+
+If called with `PLAN_REVIEW_REPORT_PATH`, read the review report and revise the plan/task queue/readiness/check files. Treat plan review failure as a planner learning signal and append transferable lessons when applicable.
+
+Do not return `STATUS: WAITING_USER_CONFIRMATION` until the plan is ready for `plan-reviewer`. The coordinator will show the plan to the user only after plan review PASS.

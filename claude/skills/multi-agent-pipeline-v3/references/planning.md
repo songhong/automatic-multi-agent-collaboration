@@ -159,3 +159,44 @@ Planner may group tasks for parallel execution only when all of these are true:
 For each task, write `parallel_group_id`, `dependency_task_ids`, `conflict_risk`, and `shared_output_paths`. If uncertain, mark `conflict_risk: high` and keep the task serial.
 
 Same-page frontend/backend/document tasks may share a batch only when task packages define separate output paths and `fullstack-integrator` is scheduled if integration is needed.
+
+## Plan Quality Gate
+
+Every `initial_plan` and `revise_plan` must pass plan review before coordinator shows the plan to the user.
+
+Planner must write these paths before review:
+
+```text
+.agent-work/plans/planning-readiness-v<N>.json
+.agent-work/plans/plan-quality-check-v<N>.json
+.agent-work/plans/plan-v<N>.md
+.agent-work/tasks/task-queue-v<N>.json
+```
+
+`planning-readiness-v<N>.json` must state whether user questions were needed. If questions are needed, planner must return `STATUS: NEEDS_USER_INPUT` and `ASK_USER_QUESTIONS_PATH` instead of writing a final plan for confirmation.
+
+After planner returns a candidate plan, coordinator must call `plan-reviewer` with these paths only:
+
+```text
+PROJECT_REQUIREMENTS_PATH
+MATERIALS_MANIFEST_PATH
+PLAN_PATH
+TASK_QUEUE_PATH
+PLANNING_READINESS_PATH
+PLAN_QUALITY_CHECK_PATH
+ASK_USER_QUESTIONS_PATH optional
+```
+
+Coordinator reads only `.agent-work/plan-reviews/plan-review-v<N>/result.json`. It must not read the full review report, plan body, task body, or requirement body.
+
+If plan review FAILS:
+
+1. Coordinator does not show the plan to the user.
+2. Coordinator resumes the same `project-planner` instance.
+3. Handoff includes `PLAN_REVIEW_REPORT_PATH`, `PLAN_REVIEW_RESULT_PATH`, previous plan/task queue paths, and original requirement/material paths.
+4. Planner writes revised readiness, plan-quality check, plan, and task queue paths.
+5. Coordinator calls the same `plan-reviewer` identity again when possible.
+
+Plan review has the same repair limit as development repair: maximum 3 review-fix attempts. If it still fails, write `.agent-work/human-review/plan-review-human-review-required.md` and report only path/status to the user.
+
+A plan that is only a module list or short bullet checklist must fail plan review.

@@ -214,3 +214,9 @@
 3. **如果用户只说"帮我做一个XX"** → 用 brainstorming skill 和用户澄清后决定
 4. **如果项目很简单但用户给了复杂需求** → 优先选择最匹配的专用 agent，不用通用
 5. **如果确定不了测试是否要参与** → 先启用 code-quality/runtime，只有任务证据显示需要时再加入专项 tester，避免无效 SKIP 消耗 token
+
+## Plan Review Agent
+
+`plan-reviewer` is not a developer or implementation tester. Use it only after `project-planner` produces a candidate plan/task queue and before the coordinator shows that plan to the user.
+
+Trigger `plan-reviewer` for every `initial_plan` and `revise_plan` candidate. It checks plan depth, readiness, source/material coverage, task package completeness, source anchors, tester selection, quality gates, and whether the plan is only a shallow module list. It does not rewrite the plan; failures return to the same `project-planner`.

@@ -50,3 +50,7 @@ Confirm, without reading payload bodies:
 - output directory is known or marked `TO_BE_DECIDED_BY_PLANNER`
 - batch size is explicit or defaults to `1`
 - max repair attempts defaults to `3`
+
+## Configured Agents
+
+The full pipeline includes 19 agents, including `plan-reviewer`. Experience initialization should include one cache file for every configured agent, including `.agent-work/experience/plan-reviewer.md`.

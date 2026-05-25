@@ -147,3 +147,61 @@ Every tester `result.json` must include issue category counts:
   "quality_gate": "completion_quality_gate"
 }
 ```
+
+## Plan Review Schemas
+
+`planning-readiness-v<N>.json`:
+
+```json
+{
+  "plan_version": 1,
+  "status": "READY_FOR_PLAN_REVIEW",
+  "requirements_sufficient": true,
+  "user_questions_needed": false,
+  "ask_user_questions_path": null,
+  "approach_options_considered": 2,
+  "missing_information": [],
+  "reason_no_questions_needed": "The requirements define target output, data sources, quality bar, and deployment constraints."
+}
+```
+
+`plan-quality-check-v<N>.json`:
+
+```json
+{
+  "plan_version": 1,
+  "status": "READY_FOR_PLAN_REVIEW",
+  "has_success_criteria": true,
+  "has_material_mapping": true,
+  "has_approach_comparison": true,
+  "has_architecture_or_data_flow": true,
+  "has_module_implementation_details": true,
+  "has_task_dependencies": true,
+  "has_testing_strategy": true,
+  "has_quality_gates": true,
+  "has_deliverables": true,
+  "shallow_module_list_risk": false
+}
+```
+
+Plan review `result.json`:
+
+```json
+{
+  "agent_name": "plan-reviewer",
+  "agent_id": "RUNTIME_UNKNOWN",
+  "plan_version": 1,
+  "review_attempt": 1,
+  "status": "PASS",
+  "issue_count": 0,
+  "blocking_issue_count": 0,
+  "major_issue_count": 0,
+  "needs_planner_rewrite": false,
+  "review_report_path": ".agent-work/plan-reviews/plan-review-v1/PLAN_REVIEW_PASS.md",
+  "failed_sections": [],
+  "planner_agent_to_resume": "project-planner",
+  "confidence": "high"
+}
+```
+
+Coordinator may read plan review `result.json`, but must not read `PLAN_REVIEW_FAIL.md` or `PLAN_REVIEW_PASS.md` bodies. Those report paths are for planner and plan-reviewer.

@@ -1,7 +1,7 @@
 ---
 name: multi-agent-pipeline-v3
 description: WSL Claude Code 多 agent 流水线。主 agent 只调度控制面文件，不读业务正文；planner/developer/tester 通过路径交接；真实 Resume 优先，逻辑 Resume 兜底；按需加载官方 skills，使用证据化测试和结构化 JSON 状态。
-allowed-tools: Agent(project-planner, architect-agent, development-agent, frontend-developer, backend-developer, document-writer, data-analyst, toolsmith, fullstack-integrator, tester-code-quality, tester-visual-aesthetic, tester-runtime-effect, tester-security, tester-performance, tester-data-integrity, tester-accessibility, release-packager), SendMessage, AskUserQuestion, Write, Edit, Bash, Read, Grep, Glob, TaskOutput, TaskStop
+allowed-tools: Agent(project-planner, plan-reviewer, architect-agent, development-agent, frontend-developer, backend-developer, document-writer, data-analyst, toolsmith, fullstack-integrator, tester-code-quality, tester-visual-aesthetic, tester-runtime-effect, tester-security, tester-performance, tester-data-integrity, tester-accessibility, release-packager), SendMessage, AskUserQuestion, Write, Edit, Bash, Read, Grep, Glob, TaskOutput, TaskStop
 ---
 
 # Multi-Agent Pipeline v3
@@ -91,3 +91,7 @@ skill-creator
 - 最终总结报告写入 `.agent-work/final/final-pipeline-summary.md`。
 
 - Quality gates and premium review: `references/quality-gates.md`
+
+- Plan reviewer rubric: `references/plan-review-rubric.md`
+
+Plan quality gate: every initial/revised plan must be reviewed by `plan-reviewer`; FAIL returns only paths to the same planner for revision.
