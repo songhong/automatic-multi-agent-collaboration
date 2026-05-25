@@ -141,3 +141,21 @@ Valid tester roles:
 - `tester-performance`
 - `tester-data-integrity`
 - `tester-accessibility`
+
+## Planner Brainstorm And User Question Protocol
+
+Planner is the only role responsible for understanding business requirements. Coordinator must not read requirement, plan, or task bodies.
+
+Use a brainstorming-style flow when requirements are ambiguous, too large, rejected by the user, or likely to produce a shallow plan:
+
+1. Explore the provided requirement and material paths.
+2. Identify missing intent, constraints, audience, success criteria, and tradeoffs.
+3. Ask one focused question at a time when the answer materially changes the plan.
+4. When there are meaningful alternatives, write 2-3 approaches with tradeoffs and a recommendation.
+5. Only after the user-facing direction is clear, write the execution plan and task queue.
+
+When user input is needed, planner writes `.agent-work/human-review/planner-questions-v<N>.json` and returns `ASK_USER_QUESTIONS_PATH` with `STATUS: NEEDS_USER_INPUT`. Coordinator may pass this path to the user or ask the planner-authored question; it must not invent business interpretation.
+
+## Conservative Parallel Planning
+
+Planner may group tasks for parallel execution only when tasks have no unresolved dependency, no shared required output path, no planned edits to the same core config/schema/route/generated artifact, and complete task packages. If uncertain, set `conflict_risk: high` and keep the task serial.

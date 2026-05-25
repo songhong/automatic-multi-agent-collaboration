@@ -240,3 +240,23 @@ Experience quality gate:
 Before work: read the project shared experience file and your project agent experience file, then apply relevant lessons.
 After a successful repair: append one qualifying transferable entry to the project agent experience file and the matching global experience file when writable. If the lesson is cross-role, also append it to shared-principles.md and the global shared file. Always write <OUTPUT_DIR>/experience-append-summary.md with paths touched and GLOBAL_EXPERIENCE_SYNC: OK or SKIPPED_PERMISSION.
 Do not append entries such as "changed page14 margin to 12px". Rewrite them as pattern-level principles before saving.
+
+## Specialist Skill And Completion Quality Rules
+
+Before implementation, read the task's `QUALITY_ACCEPTANCE_CRITERIA`, `NON_GOALS`, `SOURCE_ANCHORS`, and quality gate fields. Do not treat the task as complete merely because files were created.
+
+Use specialist skills only when relevant to the task type. If a skill is unavailable, record `SKILL_UNAVAILABLE` in evidence and continue with local rubrics when safe.
+
+Implementation manifests must include:
+
+```text
+QUALITY_GATE_USED: completion_quality_gate|premium_review_gate
+QUALITY_ACCEPTANCE_COVERAGE:
+- criterion: <criterion>
+  status: satisfied|not_satisfied|not_applicable
+  evidence_path: <path or N/A>
+SPECIALIST_SKILLS_USED:
+- <skill name or N/A>
+```
+
+If the task package is too shallow to satisfy quality criteria, return `NEEDS_TASK_CLARIFICATION` instead of guessing.

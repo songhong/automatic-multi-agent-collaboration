@@ -118,3 +118,16 @@ Experience quality gate:
 2. Pattern over page: write the reusable layout, architecture, data, document, or workflow pattern, not a page-specific fix.
 3. Transferable over copyable: after removing concrete values, page names, file names, and project nouns, the lesson must still guide a future project.
 Coordinator rule: create, copy, merge, and pass experience paths only. Do not read experience bodies, do not summarize them, and do not include experience text in control-plane logs. During init, ensure every configured agent has a UTF-8 project cache file and matching global file when writable.
+
+## Quality Gate And Parallel Dispatch Rules
+
+Coordinator may read only quality gate control fields from `current-batch-control.json`: `quality_gate`, `premium_review_required`, `premium_review_reason`, `parallel_group_id`, `dependency_task_ids`, `conflict_risk`, and `shared_output_paths`. These fields must not contain business body.
+
+Dispatch policy:
+- Run normal task testers for `completion_quality_gate`.
+- For `premium_review_required: true`, dispatch only the premium-relevant testers listed by planner.
+- Dispatch tasks in parallel only when dependency and conflict fields prove they are independent.
+- If independence is unclear, run serially.
+- If planner returns `ASK_USER_QUESTIONS_PATH`, pass that path to the user or use `AskUserQuestion` with planner-authored question data; do not read requirement bodies to formulate your own question.
+
+Premium review failures use the normal repair ownership rule: original developer repairs, original tester retests, three failed repair attempts stop for human review.

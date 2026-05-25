@@ -118,3 +118,44 @@ Add specialized testers only when the task requires them:
 For each active batch, planner writes `.agent-work/state/current-batch-control.json` using `schemas.md`. This is the coordinator's source of truth for dispatch.
 
 The file must contain task paths, developer agent names, tester names, output index path, and attempt. It must not contain task正文 or acceptance正文.
+
+## Planner Brainstorm And User Question Protocol
+
+Planner is the only agent responsible for understanding business requirements. Coordinator must not read requirement, plan, or task bodies.
+
+Use a brainstorming-style flow when requirements are ambiguous, too large, rejected by the user, or likely to produce a shallow plan:
+
+1. Explore the provided requirement and material paths.
+2. Identify missing intent, constraints, audience, success criteria, and tradeoffs.
+3. Ask one focused question at a time when the answer materially changes the plan.
+4. When there are meaningful alternatives, write 2-3 approaches with tradeoffs and a recommendation.
+5. Only after the user-facing direction is clear, write the execution plan and task queue.
+
+When user input is needed, planner writes:
+
+```text
+.agent-work/human-review/planner-questions-v<N>.json
+```
+
+The question file must contain concise user-facing questions, recommended options when possible, and why the answer matters. Planner returns only:
+
+```text
+ASK_USER_QUESTIONS_PATH: .agent-work/human-review/planner-questions-v<N>.json
+STATUS: NEEDS_USER_INPUT
+```
+
+Coordinator may pass this path to the user or use `AskUserQuestion` to ask the planner-authored question. Coordinator must not open requirement bodies or invent its own business interpretation.
+
+## Conservative Parallel Planning
+
+Planner may group tasks for parallel execution only when all of these are true:
+
+- no dependency from one task to another inside the same group,
+- no shared required output path,
+- no planned edits to the same core configuration, schema, route, or generated artifact,
+- task packages are complete enough for independent execution,
+- conflict risk is `low`, or `medium` with an explicit integrator handoff.
+
+For each task, write `parallel_group_id`, `dependency_task_ids`, `conflict_risk`, and `shared_output_paths`. If uncertain, mark `conflict_risk: high` and keep the task serial.
+
+Same-page frontend/backend/document tasks may share a batch only when task packages define separate output paths and `fullstack-integrator` is scheduled if integration is needed.

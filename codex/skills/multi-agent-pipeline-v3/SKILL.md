@@ -26,6 +26,7 @@ This skill is the lightweight entrypoint for a Codex-oriented multi-agent workfl
 - Planning, user review, task queue: `references/planning.md`
 - Batch dispatch, workers, integration: `references/execution.md`
 - Evidence-based testing and result JSON: `references/testing.md`
+- Two-layer quality gates and premium review: `references/quality-gates.md`
 - Repair loop, disagreement, human handoff: `references/repair.md`
 - Logs, status machine, progress reports: `references/logging.md`
 - Control-plane schemas: `references/schemas.md`
@@ -64,6 +65,7 @@ These files may contain agent names, runtime ids when available, run ids, batch 
 6. Dispatch the selected worker/integrator/testers from the batch control file. Read only returned JSON/status files.
 7. If any required tester fails, follow `references/repair.md` with the original worker and original tester.
 8. When a batch passes, request the next batch. When all batches pass, run the release packager role to write the final summary path.
+9. Every task uses `completion_quality_gate`; key batches and final delivery use `premium_review_gate` according to planner/release-packager control-plane fields.
 
 ## Installed Codex Skills To Prefer
 

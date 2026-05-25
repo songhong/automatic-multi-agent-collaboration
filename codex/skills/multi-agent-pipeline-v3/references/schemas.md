@@ -68,3 +68,22 @@ These are minimal control-plane shapes. Agents may add fields if they do not pla
   "blocked_batches": []
 }
 ```
+
+## Task Queue Quality And Parallel Fields
+
+Every task item must include:
+
+```json
+{
+  "quality_gate": "completion_quality_gate",
+  "premium_review_required": false,
+  "premium_review_reason": "N/A",
+  "quality_acceptance_criteria": [],
+  "parallel_group_id": "parallel-group-001",
+  "dependency_task_ids": [],
+  "conflict_risk": "low",
+  "shared_output_paths": []
+}
+```
+
+Every tester `result.json` must include `correctness_issue_count`, `quality_issue_count`, `premium_review`, and `quality_gate`.

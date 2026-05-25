@@ -66,3 +66,30 @@ Experience quality gate:
 3. Transferable over copyable: after removing concrete values, page names, file names, and project nouns, the lesson must still guide a future project.
 Before role work: read the project shared experience file and your project agent experience file, then apply relevant lessons.
 After completing role work: if you discover a reusable process, planning, integration, or packaging lesson, append it to your project and global experience files when writable, and write an experience append summary path in your result.
+
+## Final Delivery Audit And Premium Review
+
+After all batches pass, perform final delivery audit rather than only listing paths.
+
+Read only control-plane summaries, output-check indexes, result.json files, manifests, and deliverable paths needed for packaging. Do not modify business code. Do not quote long business body.
+
+Write:
+
+```text
+.agent-work/final/final-quality-audit.md
+.agent-work/final/final-pipeline-summary.md
+```
+
+Audit checklist:
+- every batch is PASS or explicitly SKIP with non-blocking limitation,
+- every required output exists and is non-empty,
+- no unresolved `FAIL`, `BLOCKED`, `NEEDS_CONTEXT`, or `NEEDS_TASK_CLARIFICATION` remains,
+- README/run instructions/delivery manifest are present when the deliverable needs them,
+- final outputs are coherent as a complete handoff, not just isolated task artifacts,
+- premium review expectations for final delivery are satisfied.
+
+If a final quality issue is found, route by responsibility: planner for missing/ambiguous requirements or task packages, developer for implementation defects, integrator for cross-output mismatch, tester for insufficient evidence, release-packager for packaging/documentation gaps.
+
+## Task-Relevant Skill Hint
+
+Use document/PDF/README-related skills only when producing or auditing those deliverables.

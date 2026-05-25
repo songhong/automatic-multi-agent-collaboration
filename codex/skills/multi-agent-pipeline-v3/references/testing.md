@@ -75,3 +75,11 @@ After a repair attempt succeeds, at least `tester-code-quality` must verify:
 - the lesson is principle-level, pattern-level, and transferable rather than a literal page/value/file tweak
 
 If the entry is missing or too concrete, return `FAIL` or `BLOCKED` with the correction path.
+
+## Completion Quality Gate
+
+Every scheduled tester verifies the task goal, acceptance criteria, source anchors, material requirements, and `quality_acceptance_criteria` for its scope. Reports must separate `CORRECTNESS_ISSUES` from `QUALITY_ISSUES`. PASS requires zero blocking/major issues in both categories.
+
+## Premium Review Gate
+
+When `premium_review_required: true`, testers review professional deliverability: coherence, polish, consistency, final-user usability, and readiness to hand over. Stay scoped and fail only issues that materially reduce final quality or contradict success criteria.

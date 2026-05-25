@@ -97,3 +97,53 @@ Every child agent final response must include a fenced JSON block:
   ]
 }
 ```
+
+## Task Queue Quality And Parallel Fields
+
+Every task item in `task-queue-v<N>.json` must include these fields in addition to the base task fields:
+
+```json
+{
+  "quality_gate": "completion_quality_gate",
+  "premium_review_required": false,
+  "premium_review_reason": "N/A",
+  "quality_acceptance_criteria": [],
+  "parallel_group_id": "parallel-group-001",
+  "dependency_task_ids": [],
+  "conflict_risk": "low",
+  "shared_output_paths": []
+}
+```
+
+`quality_acceptance_criteria` must describe user-visible completion quality. Do not fill it with generic phrases only; tie it to the task's goal and source anchors.
+
+## current-batch-control Quality Fields
+
+Each task in `current-batch-control.json` must carry these coordinator-readable quality fields:
+
+```json
+{
+  "quality_gate": "completion_quality_gate",
+  "premium_review_required": false,
+  "premium_review_reason": "N/A",
+  "parallel_group_id": "parallel-group-001",
+  "dependency_task_ids": [],
+  "conflict_risk": "low",
+  "shared_output_paths": []
+}
+```
+
+These fields are control-plane metadata and may be read by coordinator. They must not contain requirement body text.
+
+## Test Result Quality Fields
+
+Every tester `result.json` must include issue category counts:
+
+```json
+{
+  "correctness_issue_count": 0,
+  "quality_issue_count": 0,
+  "premium_review": false,
+  "quality_gate": "completion_quality_gate"
+}
+```

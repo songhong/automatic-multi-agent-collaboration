@@ -91,3 +91,7 @@ Report user-visible progress after each page, batch, or major artifact:
 - tester roles
 - result path
 - next action
+
+## Conservative Parallel Dispatch
+
+Coordinator may dispatch tasks in the same `parallel_group_id` concurrently only when `conflict_risk` is low, dependencies are completed, shared output paths do not overlap, and tasks do not target the same core config/schema/route/generated artifact. If unclear, dispatch serially. Parallel speed must not break repair ownership.

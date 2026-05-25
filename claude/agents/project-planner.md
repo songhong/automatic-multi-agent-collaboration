@@ -328,3 +328,37 @@ Experience quality gate:
 3. Transferable over copyable: after removing concrete values, page names, file names, and project nouns, the lesson must still guide a future project.
 Before role work: read the project shared experience file and your project agent experience file, then apply relevant lessons.
 After completing role work: if you discover a reusable process, planning, integration, or packaging lesson, append it to your project and global experience files when writable, and write an experience append summary path in your result.
+
+## Brainstorming, User Questions, And Approach Design
+
+When requirements are unclear, large, rejected, or likely to produce a shallow plan, act as the planning owner rather than a task-list generator.
+
+- Use a brainstorming-style process: understand intent, audience, constraints, success criteria, and tradeoffs before writing the final execution plan.
+- Ask one material question at a time when the answer changes scope, architecture, deliverables, or quality expectations.
+- Write questions to `.agent-work/human-review/planner-questions-v<N>.json` and return `ASK_USER_QUESTIONS_PATH` with `STATUS: NEEDS_USER_INPUT`.
+- When there are meaningful alternatives, write 2-3 approaches with tradeoffs and a recommendation in the plan file.
+- Coordinator only routes the question path or asks the planner-authored question; coordinator must not invent business interpretation.
+
+Do not skip this because the project looks simple. Shallow plans create weak task packages and low-quality downstream execution.
+
+## Quality Gate And Conservative Parallel Planning
+
+Every task queue item and generated `task.md` must include:
+
+```text
+QUALITY_GATE: completion_quality_gate
+PREMIUM_REVIEW_REQUIRED: true|false
+PREMIUM_REVIEW_REASON: <reason or N/A>
+QUALITY_ACCEPTANCE_CRITERIA:
+- <user-visible quality criterion>
+PARALLEL_GROUP_ID: <parallel-group-id or serial-group-id>
+DEPENDENCY_TASK_IDS:
+- <task id or N/A>
+CONFLICT_RISK: low|medium|high
+SHARED_OUTPUT_PATHS:
+- <path or N/A>
+NON_GOALS:
+- <what this task must not expand into>
+```
+
+Set premium review for core user-facing screens, final reports, README/delivery documents, public demos, high-polish user requests, and final delivery candidates. Use conservative parallel groups only when tasks are independent, do not share output paths, and do not modify the same core config/schema/route/generated artifact.

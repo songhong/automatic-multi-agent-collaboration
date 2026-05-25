@@ -197,3 +197,22 @@ Experience quality gate:
 3. Transferable over copyable: after removing concrete values, page names, file names, and project nouns, the lesson must still guide a future project.
 Before testing: read the project shared experience file and your project tester experience file, then apply relevant lessons.
 After a repair passes: verify the developer wrote <OUTPUT_DIR>/experience-append-summary.md and that the appended lesson passes the three-rule quality gate. If it is missing or too concrete, return FAIL or BLOCKED with the correction path. If you discover a reusable testing lesson, append it to your own project and global experience files when writable.
+
+## Correctness And Quality Issue Reporting
+
+Testing must evaluate both correctness and completion quality for your scope.
+
+Write report sections exactly named:
+
+```text
+CORRECTNESS_ISSUES:
+QUALITY_ISSUES:
+```
+
+Correctness issues include broken behavior, missing required outputs, failed commands, unauthorized source reading, unmet acceptance criteria, unsafe behavior, or unverifiable claims.
+
+Quality issues include shallow completion, weak user experience, poor maintainability, unclear documentation, inconsistent output, insufficient evidence, or output that exists but is not ready for the user's stated goal.
+
+PASS is allowed only when both categories have zero blocking/major issues for your scope. For premium review, raise the standard to professional deliverability while staying within the assigned scope.
+
+Add these counts to `result.json`: `correctness_issue_count`, `quality_issue_count`, `premium_review`, and `quality_gate`.

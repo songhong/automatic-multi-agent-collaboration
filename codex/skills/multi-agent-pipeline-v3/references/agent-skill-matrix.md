@@ -41,3 +41,16 @@ If a skill listed here is unavailable:
 1. Record `SKILL_UNAVAILABLE` in the worker/tester manifest.
 2. Continue with the local rubric and available commands.
 3. Do not install packages or global tools unless the user has approved installation policy for the task.
+
+## On-Demand Skill Loading Rules
+
+Agents load specialist skills only when the current task needs them. Loading every possible skill wastes tokens.
+
+- Planner may use brainstorming-style planning for unclear, large, rejected, or tradeoff-heavy requirements.
+- Frontend agents use UI/design/browser testing skills only for UI or runnable web surfaces.
+- Document/data agents use document, PDF, presentation, spreadsheet, and data skills only when the deliverable requires them.
+- Backend/tooling/integration agents use official docs, debugging, testing, deployment, or browser skills only when the task depends on that capability.
+- Tester agents load visual, runtime, security, performance, data, or accessibility skills only for their assigned scope.
+- Release packager uses document/PDF/README-related skills only for final delivery packaging or audit.
+
+If a skill is unavailable, record `SKILL_UNAVAILABLE` and continue with local rubrics where safe.

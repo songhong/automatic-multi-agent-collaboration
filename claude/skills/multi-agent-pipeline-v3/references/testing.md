@@ -51,3 +51,20 @@ A tester can PASS only when:
 - result JSON is complete.
 
 `SKIP` is allowed only when the tester is not relevant to the task type. Planner should avoid scheduling irrelevant testers.
+
+## Completion Quality Gate
+
+Every scheduled tester performs a completion quality check for its own scope. Testing is not limited to detecting crashes or syntax errors. The tester must verify that the implemented output satisfies the task goal, acceptance criteria, source anchors, material requirements, and `quality_acceptance_criteria`.
+
+Reports must separate:
+
+- `CORRECTNESS_ISSUES`: wrong, missing, broken, unauthorized, unsafe, or unverifiable behavior.
+- `QUALITY_ISSUES`: incomplete execution quality, weak UX, poor maintainability, unclear documentation, inconsistent output, or work that technically exists but is not user-ready.
+
+A PASS requires zero blocking/major correctness issues and zero blocking/major quality issues for the tester's assigned scope.
+
+## Premium Review Gate
+
+When `premium_review_required: true`, testers raise the bar from task completion to professional deliverability. Premium review focuses on coherence, polish, consistency, final-user usability, and whether the result feels ready to hand over.
+
+Premium review must stay scoped. Do not request unrelated rewrites. Fail only issues that materially reduce final quality or contradict the user's stated success criteria.

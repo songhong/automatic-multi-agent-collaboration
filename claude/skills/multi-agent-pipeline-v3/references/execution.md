@@ -94,3 +94,16 @@ The coordinator forwards the integration summary path to testers but does not re
 Before tester dispatch, coordinator reads `.agent-work/state/output-check-index/<batch_id>.json` and checks only that each `required: true` path exists and size is greater than zero.
 
 If missing or empty, resume the same developer/integrator for output repair. This does not count as a tester repair attempt.
+
+## Conservative Parallel Dispatch
+
+Coordinator may dispatch tasks in the same `parallel_group_id` concurrently only when `current-batch-control.json` shows:
+
+- `conflict_risk` is `low`, or `medium` with `integration_required: true`,
+- `dependency_task_ids` are empty or already completed,
+- `shared_output_paths` is empty across concurrently dispatched tasks,
+- no two tasks target the same core config, schema, route, generated file, or required output.
+
+If any condition is unclear, dispatch serially. Parallel speed must not break ownership: the developer who created a failing output repairs it, and the tester who found the issue retests it.
+
+After parallel developers finish, run `fullstack-integrator` before testers when the batch includes multiple developers, shared contracts, routes, startup scripts, or cross-output consistency requirements.

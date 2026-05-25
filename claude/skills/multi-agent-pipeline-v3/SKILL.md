@@ -89,3 +89,5 @@ skill-creator
 - 所有 required 输出文件存在且非空。
 - 所有参与 tester 均 PASS 或 SKIP；FAIL 走修复循环，三轮失败转人工。
 - 最终总结报告写入 `.agent-work/final/final-pipeline-summary.md`。
+
+- Quality gates and premium review: `references/quality-gates.md`
