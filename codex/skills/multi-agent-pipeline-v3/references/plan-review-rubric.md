@@ -1,46 +1,20 @@
-# Plan Review Rubric
+# 计划审查 Rubric
 
-## Purpose
+`plan-reviewer` 检查 planner 的计划是否足够让用户理解、让 developer 执行、让 tester 验收。
 
-`plan-reviewer` uses this rubric to decide whether a `project-planner` output is ready for the user and downstream developer agents.
+## 必须 FAIL 的情况
 
-A good plan is an implementation design and task contract. A bad plan is a shallow module list.
+- 计划只有模块标题或短 bullet，没有实施路线。
+- 没有说明用户目标、成功标准、约束或交付物。
+- 任务存在明显路线选择，却没有方案比较和推荐理由。
+- 需求不清时没有写 `ASK_USER_QUESTIONS_PATH`，也没有说明为何不需要追问。
+- 没有 readiness 判断。
+- 没有材料映射，或明显漏用用户新增参考文件。
+- 缺少架构、数据流、接口关系、文件/模块影响范围或执行顺序。
+- task package 缺少目标、范围、验收、输出路径、source anchors 或允许回看范围。
+- 长需求没有拆到 task-level anchors。
+- tester、quality gate、premium review 选择明显不合理。
 
-## Automatic FAIL Conditions
+## PASS 条件
 
-Fail the plan if any of these are true:
-
-- The plan is mostly short bullets such as "install dependencies", "modify app.py", "optimize prompt", "build UI", or "write README" without implementation design.
-- The plan lacks a planning readiness check or does not explain why no user question was needed.
-- The planner should have asked the user about scope, output path, target audience, quality bar, model/runtime choice, data source, privacy constraint, or tradeoff, but generated a plan directly.
-- The plan has no approach comparison even though multiple routes are plausible.
-- The plan lacks user-visible success criteria.
-- The plan lacks material/source file mapping.
-- The plan lacks architecture, data flow, module contracts, or dependency ordering for a multi-module project.
-- Task packages lack goal, scope, non-goals, acceptance criteria, expected output paths, source anchors, quality acceptance criteria, or allowed source-read scope.
-- Long requirements are not decomposed into task-level anchors.
-- Tester selection, quality gate, or premium review settings are missing or obviously too weak.
-- A developer would need to reread the whole original requirement or guess implementation intent to execute the task.
-
-## Required PASS Qualities
-
-A PASS plan must show:
-
-- Clear understanding of user goal, audience, constraints, and success criteria.
-- Explicit materials mapping: which files matter and how they will be used.
-- When alternatives exist: 2-3 options, tradeoffs, and a recommendation.
-- Implementation design: architecture, data flow, module-level steps, integration points, dependency ordering, and risks.
-- Task packages detailed enough for developer agents to execute independently.
-- Tester agents can tell exactly how to validate correctness and quality.
-- Premium review is enabled for critical user-facing or final-delivery outputs.
-- Known uncertainties are either resolved through questions or explicitly recorded for user confirmation.
-
-## Severity Guide
-
-- `blocking`: plan cannot be safely handed to developers; missing readiness, source anchors, task package details, or user questions.
-- `major`: plan is executable but likely to produce low quality or incomplete work; missing tradeoffs, risk, testing, or material mapping.
-- `minor`: plan is usable but can be clearer; wording, ordering, or evidence paths need refinement.
-
-## Review Discipline
-
-Do not rewrite the plan. Give specific fix directions and paths. The planner remains responsible for the revised plan.
+用户能从 plan 看出整体路线、关键取舍、风险和交付物；developer 拿任务包能直接执行；tester 知道如何判断正确性和质量；source anchors 覆盖长需求关键内容；coordinator 只需要读 `result.json` 就能调度下一步。

@@ -105,7 +105,7 @@ SendMessage(to=<agent_id>, message=<handoff_message>)
 
 每次关键事件追加一行 JSONL 到 `.agent-work/logs/pipeline-log.jsonl`。格式见 skill 文件第十五节。
 
-## Global Experience Library
+## 全局经验库
 
 EXPERIENCE_LIBRARY_PATHS:
 - PROJECT_SHARED_EXPERIENCE: .agent-work/experience/shared-principles.md
@@ -113,17 +113,17 @@ EXPERIENCE_LIBRARY_PATHS:
 - CLAUDE_GLOBAL_EXPERIENCE: /home/zhuyu/.claude/agent-experience/pipeline-coordinator.md
 - CODEX_GLOBAL_EXPERIENCE: C:/Users/zhuyu/.codex/agent-experience/pipeline-coordinator.md
 
-Experience quality gate:
-1. Principle over number: write why the decision was wrong, not the literal value changed.
-2. Pattern over page: write the reusable layout, architecture, data, document, or workflow pattern, not a page-specific fix.
-3. Transferable over copyable: after removing concrete values, page names, file names, and project nouns, the lesson must still guide a future project.
+经验质量门：
+1. 原则性 > 数值性：写为什么决策错了，不写改了哪个具体值。
+2. 模式级 > 页面级：写可复用的布局、架构、数据、文档或流程模式，不写单页修复。
+3. 可迁移 > 可复制：去掉具体数值、页面名、文件名和项目名后，这条经验仍要能指导未来项目。
 Coordinator rule: create, copy, merge, and pass experience paths only. Do not read experience bodies, do not summarize them, and do not include experience text in control-plane logs. During init, ensure every configured agent has a UTF-8 project cache file and matching global file when writable.
 
-## Quality Gate And Parallel Dispatch Rules
+## 质量门与并行调度规则
 
 Coordinator may read only quality gate control fields from `current-batch-control.json`: `quality_gate`, `premium_review_required`, `premium_review_reason`, `parallel_group_id`, `dependency_task_ids`, `conflict_risk`, and `shared_output_paths`. These fields must not contain business body.
 
-Dispatch policy:
+调度策略：
 - Run normal task testers for `completion_quality_gate`.
 - For `premium_review_required: true`, dispatch only the premium-relevant testers listed by planner.
 - Dispatch tasks in parallel only when dependency and conflict fields prove they are independent.
@@ -132,7 +132,7 @@ Dispatch policy:
 
 Premium review failures use the normal repair ownership rule: original developer repairs, original tester retests, three failed repair attempts stop for human review.
 
-## Reference Material No-Read Rule
+## 参考材料禁止 coordinator 阅读规则
 
 User phrases such as `参考`, `参考内容`, `可以参考`, `看这个文件`, `阅读这个文件`, `按照文件内容`, `依据材料`, `用这几个文件`, or `结合这些文档` authorize the business-reading agents, not you. They do not permit coordinator to read material bodies.
 
@@ -153,7 +153,7 @@ authorized_reader: project-planner
 
 Then hand off `PROJECT_REQUIREMENTS_PATH`, `MATERIALS_MANIFEST_PATH`, and `USER_MATERIAL_AUTHORIZATION: user allowed planner to reference listed material contents` to `project-planner`. If you accidentally read business material content, immediately stop the run, write `.agent-work/human-review/coordinator-read-violation.md`, and do not use the read content for planning.
 
-## Plan Review Gate Dispatch
+## 计划审查门调度
 
 After `project-planner` returns `PLAN_PATH` and `TASK_QUEUE_PATH`, do not show them to the user yet. First dispatch or resume `plan-reviewer` with only these paths: `PROJECT_REQUIREMENTS_PATH`, `MATERIALS_MANIFEST_PATH`, `PLAN_PATH`, `TASK_QUEUE_PATH`, `PLANNING_READINESS_PATH`, `PLAN_QUALITY_CHECK_PATH`, and optional `ASK_USER_QUESTIONS_PATH`.
 
@@ -163,11 +163,11 @@ If plan review PASS: return plan paths/status to the user.
 
 If plan review FAIL: resume the same `project-planner` instance and pass `PLAN_REVIEW_REPORT_PATH` and `PLAN_REVIEW_RESULT_PATH`. Do not start a new planner. Maximum 3 plan review repair attempts; then write human-review path and stop.
 
-## Business Payload Read Guard
+## 业务正文读取防线
 
-Before every `Read` or shell text-inspection command, classify the target path. If the path is not a pipeline reference or explicit control-plane file, treat it as business payload and do not read it.
+每次执行 `Read` 或 shell 文本检查命令前，先分类目标路径。如果路径不是 pipeline reference 或明确控制面文件，就视为业务正文，不得读取。
 
-User permission to `??`, `?`, `??`, `??`, `??`, `??`, or `?` material files authorizes `project-planner`/authorized child agents, not coordinator. Coordinator may only record material metadata and pass paths.
+用户允许“参考、阅读、查看、按照、依据、使用、结合”材料文件时，授权对象是 `project-planner` 和被授权的子 agent，不是 coordinator。coordinator 只能记录材料元数据并传递路径。
 
 Allowed metadata commands for user materials: `ls`, `stat`, `Get-Item`, `Get-ChildItem`, and `Test-Path`. Forbidden commands for user materials: `Read`, `cat`, `type`, `Get-Content`, `head`, `tail`, `sed`, `grep`, `rg`, and `Select-String`.
 

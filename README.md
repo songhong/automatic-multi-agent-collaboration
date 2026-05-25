@@ -1,176 +1,58 @@
-# Automatic Multi-Agent Collaboration
+# Automatic Multi-Agent Collaboration（自动化多 agent 协作）
 
-This repository contains two versions of the same automation idea:
+这个仓库保存同一套自动化多 agent 协作思路的两个版本：
 
-- `claude/`: a Claude Code skill for a WSL-based multi-agent pipeline.
-- `codex/`: a Codex skill adapted to Codex skills, references, and installed skill names.
+- `claude/`：给 WSL Claude Code 使用的 skill 与 agents。
+- `codex/`：给 Codex 使用的 skill、references 与 agents。
 
-The project name in Chinese is "自动化多agent协作".
+## 核心思路
 
-## Core Idea
+长任务里最浪费 token 的地方，是反复把需求、计划、代码、日志、测试报告塞回主对话。这个 workflow 把主 agent 定义成“调度器”，而不是万能执行者。
 
-Most long agent runs waste context by repeatedly pasting requirements, plans, code, logs, and test reports into the coordinator conversation. This workflow treats the main agent as an orchestrator instead of a universal worker.
+coordinator 只推进状态、记录日志、传递路径、读取紧凑的 JSON 状态。真正需要上下文的工作交给专业角色：planner、developer、tester、integrator、release-packager。
 
-The coordinator only moves the project through states. It stores large content in files, passes paths to specialist roles, reads compact status JSON, and keeps an append-only audit trail. Specialist agents are responsible for the work that actually needs context: planning, implementation, testing, repair, integration, and final packaging.
+严格规则：主 agent 只调度；业务正文留在文件里；planner 负责理解需求、追问用户、比较方案、拆任务；developer 执行任务包；tester 检查完成质量；谁开发谁修，谁测试谁复测；三轮修复仍失败就转人工。
 
-The workflow is built around a strict coordinator pattern:
-
-- the main agent schedules work, records logs, and reports progress
-- planner, worker, tester, integrator, and release roles exchange file paths
-- business content stays in files instead of being pasted into the main context
-- the same responsible worker fixes its own batch
-- the same tester validates the repair
-- three failed repair attempts stop the batch for human review
-
-## Architecture
+## 架构
 
 ```text
-user request
-  -> coordinator writes opaque requirements file
-  -> planner writes plan and task queue
-  -> user reviews plan path
-  -> coordinator dispatches one batch
-  -> worker writes artifacts and manifest
-  -> selected testers write result JSON
-  -> failures return to the same worker and same tester
-  -> passing batches advance
-  -> release packager writes final summary
+用户需求
+  -> coordinator 写入不透明需求文件
+  -> planner 读取需求并写计划/任务队列
+  -> plan-reviewer 审查计划质量
+  -> 用户确认计划路径
+  -> coordinator 派发 batch
+  -> worker 写产物和 manifest
+  -> tester 写 result.json 和证据
+  -> 失败回到同一 worker 和同一 tester
+  -> 通过后进入下一批
+  -> release-packager 写最终汇总
 ```
 
-The workflow uses `.agent-work/` as the control plane:
+`.agent-work/` 是控制面，保存 input、state、plans、tasks、results、logs、human-review、final、experience 等目录。全局经验库位于 `/home/zhuyu/.claude/agent-experience/<agent-name>.md` 或 `C:\Users\zhuyu\.codex\agent-experience\<agent-name>.md`。
 
-- `input/`: original request and user feedback files
-- `state/`: run state, batch config, current batch control, id cache
-- `plans/`: planner output
-- `tasks/`: task queue and task files
-- `results/`: worker manifests, tester result JSON, evidence paths
-- `logs/`: machine JSONL and user-readable progress
-- `human-review/`: questions and blocked batch summaries
-- `final/`: final pipeline summary
-- `experience/`: per-agent project cache of reusable lessons
+## 为什么节省 token
 
-The workflow can also keep global experience libraries outside the project:
+coordinator 不加载完整需求、计划、代码或测试报告，只传路径和读取紧凑 JSON。skill 也拆成轻量 `SKILL.md` 加阶段化 `references/`，让 Claude/Codex 只加载当前阶段需要的协议。
 
-- Claude: `/home/zhuyu/.claude/agent-experience/<agent-name>.md`
-- Codex: `C:\Users\zhuyu\.codex\agent-experience\<agent-name>.md`
+节省来自：渐进加载、路径化 handoff、选择性测试、稳定责任链、经验蒸馏。
 
-Subagents read their shared and role-specific experience before work. After a successful repair, the responsible worker appends a transferable lesson locally and globally when writable. The coordinator only creates, syncs, and passes experience paths; it does not read experience bodies.
+## 质量机制
 
-## Role Model
+每个任务走 `completion_quality_gate`。关键 batch 和最终交付可启用 `premium_review_gate`。计划必须先经过 `plan-reviewer`；如果计划只是模块清单、缺少方案比较、任务包不完整、没有 source anchors、该问用户却没问，就会 FAIL 并回到同一个 planner 修订。
 
-Both platform folders include the role definitions needed to run the workflow:
+## coordinator 材料不读边界
 
-```text
-claude/
-  agents/
-  skills/multi-agent-pipeline-v3/
+用户说“可以参考/阅读/查看/依据/结合材料”，授权对象是 planner、reviewer 或对应子 agent，不是 coordinator。coordinator 只记录路径和元数据，写 `content_read_by_coordinator: false`，然后把 manifest 交给 `project-planner`。
 
-codex/
-  agents/
-  skills/multi-agent-pipeline-v3/
-```
+## 使用 Codex 版
 
-Planning roles:
+复制或安装 `codex/skills/multi-agent-pipeline-v3` 到 `~/.codex/skills/multi-agent-pipeline-v3`。如果要使用完整本地项目 workflow，也把 `codex/agents` 复制到当前环境使用的 Codex agent 目录。重启 Codex 后调用 `$multi-agent-pipeline-v3`。
 
-- `project-planner`: creates plans, task queues, batches, and tester selection.
-- `architect-agent`: handles architecture decisions and arbitration.
+## 使用 Claude 版
 
-Worker roles:
+把 `claude/agents` 和 `claude/skills/multi-agent-pipeline-v3` 复制到 Claude Code 使用的配置目录，然后在 Claude 中调用 skill。Claude 版针对 WSL Claude Code 和 `.claude/` 路径优化。
 
-- `development-agent`: general fallback.
-- `frontend-developer`: UI and browser-facing work.
-- `backend-developer`: APIs, auth, data services, and server logic.
-- `document-writer`: document/PDF/report output.
-- `data-analyst`: tables, charts, calculations, and data transforms.
-- `toolsmith`: CLI tools and automation scripts.
-- `fullstack-integrator`: joins work across surfaces.
-- `release-packager`: final summary and handoff.
+## 安全说明
 
-Tester roles:
-
-- `tester-code-quality`
-- `tester-runtime-effect`
-- `tester-visual-aesthetic`
-- `tester-security`
-- `tester-performance`
-- `tester-data-integrity`
-- `tester-accessibility`
-
-## Why This Saves Tokens
-
-The coordinator never loads full requirements, plans, code, or test reports into its own context. It passes paths and reads compact JSON status files. The skill itself is also split into a small `SKILL.md` plus stage-specific `references/`, so Codex or Claude loads only the part of the protocol needed at that moment.
-
-Token savings come from four design choices:
-
-- Progressive disclosure: `SKILL.md` is an entrypoint; details live in stage references.
-- Path-only handoffs: large content stays on disk.
-- Selective testing: only required testers run; the default is code quality plus runtime.
-- Stable repair ownership: repair loops reuse the same responsible roles instead of restarting context-heavy investigations.
-- Reusable lessons: only distilled, pattern-level experience is persisted globally, so future runs benefit without pasting full failures into the coordinator context.
-
-## Framework
-
-1. Initialize `.agent-work` state, logs, materials, batch config, and id cache.
-2. Write the user request to a requirements file and treat it as opaque to the coordinator.
-3. Ask the planner to generate a plan path and task queue path.
-4. Let the user review the plan path and request revisions.
-5. Execute approved work one batch at a time.
-6. Test each batch with only the required testers.
-7. Route failures back to the original worker and original tester.
-8. Package a final summary when all batches pass.
-
-## Advantages
-
-- Lower context usage through path-only handoffs.
-- Better accountability: one worker owns one task, and one tester owns retesting.
-- Easier debugging through append-only logs and structured result files.
-- Safer orchestration because the coordinator avoids reading or leaking business content.
-- Flexible role selection for frontend, backend, documents, data analysis, tools, full-stack integration, and release packaging.
-- Better human handoff when automation gets stuck: after three failed repair loops, the batch stops with a focused review file.
-- Long-term learning: each agent has its own experience library, filtered by principle-over-number, pattern-over-page, and transferable-over-copyable rules.
-
-## Using The Codex Skill
-
-Install or copy `codex/skills/multi-agent-pipeline-v3` into:
-
-```text
-~/.codex/skills/multi-agent-pipeline-v3
-```
-
-For the full local project workflow, also copy `codex/agents` into the project-level Codex agent directory used by your environment.
-
-Restart Codex, then invoke:
-
-```text
-$multi-agent-pipeline-v3
-```
-
-The Codex version uses Codex skill names such as `superpowers:*`, `vercel:*`, `documents`, `presentations`, `spreadsheets`, and `pdf`. It does not assume Claude-only skills like `frontend-design`, `webapp-testing`, `docx`, `pptx`, or `xlsx`.
-
-## Using The Claude Skill
-
-Copy both `claude/agents` and `claude/skills/multi-agent-pipeline-v3` into the Claude configuration used by your Claude Code environment, then invoke the skill from Claude.
-
-The Claude version is tuned for WSL Claude Code and its `.claude/` paths.
-
-## Safety Notes
-
-- Do not commit `.agent-work/` outputs unless you intentionally want to publish run logs.
-- Do not put API keys, cookies, tokens, `.env` files, or private materials in this repository.
-- Review generated plans and final reports before publishing them.
-
-
-## Two-Layer Quality Gates
-
-This pipeline now separates normal completion checks from premium review. Every task uses `completion_quality_gate` for correctness, requirement coverage, completeness, runnable output, and maintainability. Key batches and final delivery can enable `premium_review_gate` for professional polish, consistency, final-user usability, documentation readiness, visual quality, performance, accessibility, and cross-deliverable coherence.
-
-Planner remains the business-understanding role. The coordinator routes paths, questions, status, and control-plane JSON only; it does not read business bodies. Planner can use brainstorming-style clarification and approach comparison before producing task packages. Specialist agents load skills on demand to reduce token use.
-
-
-## Plan Reviewer Quality Gate
-
-The pipeline includes a `plan-reviewer` agent that checks planner output before it reaches the user. It rejects shallow module-list plans, missing user-question readiness, weak task packages, missing source anchors, poor tester selection, and absent quality gates. Coordinator reads only plan review result JSON and sends failure report paths back to the same planner.
-
-## Coordinator Material No-Read Boundary
-
-When the user says materials may be referenced or read, that permission belongs to planner/reviewer/worker roles, not the coordinator. The coordinator records material paths and metadata only, sets `content_read_by_coordinator: false`, and passes the manifest to `project-planner`.
+不要提交 `.agent-work/` 运行产物，除非你明确想公开运行日志。不要把 API key、cookie、token、`.env` 或私人材料放进本仓库。发布生成计划和最终报告前，先人工检查。

@@ -207,7 +207,7 @@ DISAGREED_ITEMS:
 EXPERIENCE_APPEND_PATH: <OUTPUT_DIR>/experience-append-summary.md
 ```
 
-## Global Experience Library
+## 全局经验库
 
 EXPERIENCE_LIBRARY_PATHS:
 - PROJECT_SHARED_EXPERIENCE: .agent-work/experience/shared-principles.md
@@ -215,21 +215,21 @@ EXPERIENCE_LIBRARY_PATHS:
 - CLAUDE_GLOBAL_EXPERIENCE: /home/zhuyu/.claude/agent-experience/frontend-developer.md
 - CODEX_GLOBAL_EXPERIENCE: C:/Users/zhuyu/.codex/agent-experience/frontend-developer.md
 
-Experience quality gate:
-1. Principle over number: write why the decision was wrong, not the literal value changed.
-2. Pattern over page: write the reusable layout, architecture, data, document, or workflow pattern, not a page-specific fix.
-3. Transferable over copyable: after removing concrete values, page names, file names, and project nouns, the lesson must still guide a future project.
-Before work: read the project shared experience file and your project agent experience file, then apply relevant lessons.
-After a successful repair: append one qualifying transferable entry to the project agent experience file and the matching global experience file when writable. If the lesson is cross-role, also append it to shared-principles.md and the global shared file. Always write <OUTPUT_DIR>/experience-append-summary.md with paths touched and GLOBAL_EXPERIENCE_SYNC: OK or SKIPPED_PERMISSION.
-Do not append entries such as "changed page14 margin to 12px". Rewrite them as pattern-level principles before saving.
+经验质量门：
+1. 原则性 > 数值性：写为什么决策错了，不写改了哪个具体值。
+2. 模式级 > 页面级：写可复用的布局、架构、数据、文档或流程模式，不写单页修复。
+3. 可迁移 > 可复制：去掉具体数值、页面名、文件名和项目名后，这条经验仍要能指导未来项目。
+工作前：读取项目共享经验和自己的 agent 经验文件，并应用相关经验。
+修复成功后：向项目专属经验库和可写的全局经验库追加一条合格的可迁移经验。如果经验跨角色通用，也追加到 `shared-principles.md` 和全局共享经验。必须写 `<OUTPUT_DIR>/experience-append-summary.md`，记录触达路径和 `GLOBAL_EXPERIENCE_SYNC: OK` 或 `SKIPPED_PERMISSION`。
+不要追加“page14 margin 改成 12px”这类经验。保存前必须改写成模式级原则。
 
-## Specialist Skill And Completion Quality Rules
+## 专项 skill 与完成质量规则
 
-Before implementation, read the task's `QUALITY_ACCEPTANCE_CRITERIA`, `NON_GOALS`, `SOURCE_ANCHORS`, and quality gate fields. Do not treat the task as complete merely because files were created.
+开发前读取任务的 `QUALITY_ACCEPTANCE_CRITERIA`、`NON_GOALS`、`SOURCE_ANCHORS` 和质量门字段。不能因为创建了文件就认为任务完成。
 
-Use specialist skills only when relevant to the task type. If a skill is unavailable, record `SKILL_UNAVAILABLE` in evidence and continue with local rubrics when safe.
+只在任务类型相关时加载专项 skill。如果 skill 不可用，在证据中记录 `SKILL_UNAVAILABLE`，并在安全时使用本地 rubric 继续。
 
-Implementation manifests must include:
+implementation manifest 必须包含：
 
 ```text
 QUALITY_GATE_USED: completion_quality_gate|premium_review_gate
@@ -241,7 +241,7 @@ SPECIALIST_SKILLS_USED:
 - <skill name or N/A>
 ```
 
-If the task package is too shallow to satisfy quality criteria, return `NEEDS_TASK_CLARIFICATION` instead of guessing.
+如果任务包过浅，无法满足质量标准，返回 `NEEDS_TASK_CLARIFICATION`，不要靠猜测执行。
 
 ## Task-Relevant Skill Hint
 

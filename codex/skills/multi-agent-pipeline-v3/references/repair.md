@@ -1,33 +1,9 @@
-# Repair
+# 修复循环协议
 
-Repairs preserve responsibility.
+谁开发谁修复，谁测试谁复测。coordinator 不换人、不读正文，只把失败报告路径传回原责任链。
 
-## Routing
+原 developer 接收失败 tester 的 `TEST_REPORT_PATH`、`RESULT_JSON_PATH`、上一轮 manifest、任务路径和 attempt。
 
-- The worker that created the failing output repairs it.
-- The tester that found the failure retests it.
-- Keep the same role and runtime id when available.
-- If runtime resume is unavailable, logical resume must include all current file paths and previous result paths.
+同一 batch 最多修复 3 轮。仍失败时写 human-review 文件并停止该 batch。
 
-## Attempt Limit
-
-- Attempt 1: initial repair.
-- Attempt 2: second repair with failing result path.
-- Attempt 3: final repair.
-- After three failed repair attempts, stop the batch and write `.agent-work/human-review/<batch_id>-human-review-required.md`.
-
-## Worker Repair Input
-
-Provide:
-
-- batch control path
-- dev manifest path
-- failing tester result paths
-- attempt number
-- output index path
-
-Do not paste long failure bodies into the coordinator context. Pass paths.
-
-## Disagreement
-
-If the worker claims fixed but the original tester still fails twice on the same issue class, ask `architect-agent` to write a short arbitration file under `.agent-work/human-review/`. The coordinator reads only the arbitration status and paths.
+developer 可以不同意 tester 的问题，但必须写技术理由。原 tester 负责复核是否接受该反驳。

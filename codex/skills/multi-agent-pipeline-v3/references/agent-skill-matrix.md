@@ -1,60 +1,11 @@
-# Agent Skill Matrix
+# agent skill 使用矩阵
 
-Use installed Codex skills sparingly and on demand. Do not load every skill at startup.
+只按任务需要加载 skill，禁止为了保险一次性加载所有 skill。缺失 skill 时记录 `SKILL_UNAVAILABLE`，再使用本项目 reference/rubric。
 
-## Planning
-
-| Role | Use When | Optional Codex Skills |
-| --- | --- | --- |
-| project-planner | plan, task queue, batch selection | `superpowers:brainstorming`, `superpowers:writing-plans`, `superpowers:dispatching-parallel-agents` |
-| architect-agent | architecture, conflict arbitration, cross-cutting decisions | `superpowers:brainstorming`, `superpowers:writing-plans` |
-
-## Workers
-
-| Role | Use When | Optional Codex Skills |
-| --- | --- | --- |
-| development-agent | general coding fallback | `superpowers:test-driven-development`, `superpowers:systematic-debugging` |
-| frontend-developer | UI, React, Next.js, browser behavior | `vercel:react-best-practices`, `vercel:shadcn`, `vercel:nextjs`, `vercel:agent-browser-verify` |
-| backend-developer | APIs, auth, data services | `superpowers:systematic-debugging`, `vercel:nextjs`, `vercel:vercel-functions`, `vercel:vercel-storage` |
-| document-writer | Word/PDF/document artifacts | `documents:documents`, `pdf` |
-| data-analyst | CSV/XLSX/data transforms and charts | `spreadsheets:Spreadsheets`, `superpowers:systematic-debugging` |
-| toolsmith | CLI tools, scripts, automation | `superpowers:test-driven-development`, `superpowers:systematic-debugging` |
-| fullstack-integrator | multi-surface integration | relevant worker skills only |
-| release-packager | final report, packaging, handoff | `superpowers:verification-before-completion` |
-
-## Testers
-
-| Role | Use When | Optional Codex Skills |
-| --- | --- | --- |
-| tester-code-quality | every batch unless pure non-code output | `superpowers:verification-before-completion` |
-| tester-runtime-effect | every executable or renderable batch | `vercel:verification`, `vercel:agent-browser-verify` |
-| tester-visual-aesthetic | UI, slides, docs, reports | `vercel:agent-browser-verify`, `documents:documents`, `presentations:Presentations` |
-| tester-security | external input, auth, network, file writes | local security rubric; use official security skill only if installed |
-| tester-performance | heavy UI, data, or runtime work | `vercel:verification` |
-| tester-data-integrity | spreadsheets, reports, analytics, transforms | `spreadsheets:Spreadsheets` |
-| tester-accessibility | user-facing UI | `vercel:react-best-practices`, browser verification |
-
-## Missing Skills
-
-If a skill listed here is unavailable:
-
-1. Record `SKILL_UNAVAILABLE` in the worker/tester manifest.
-2. Continue with the local rubric and available commands.
-3. Do not install packages or global tools unless the user has approved installation policy for the task.
-
-## On-Demand Skill Loading Rules
-
-Agents load specialist skills only when the current task needs them. Loading every possible skill wastes tokens.
-
-- Planner may use brainstorming-style planning for unclear, large, rejected, or tradeoff-heavy requirements.
-- Frontend agents use UI/design/browser testing skills only for UI or runnable web surfaces.
-- Document/data agents use document, PDF, presentation, spreadsheet, and data skills only when the deliverable requires them.
-- Backend/tooling/integration agents use official docs, debugging, testing, deployment, or browser skills only when the task depends on that capability.
-- Tester agents load visual, runtime, security, performance, data, or accessibility skills only for their assigned scope.
-- Release packager uses document/PDF/README-related skills only for final delivery packaging or audit.
-
-If a skill is unavailable, record `SKILL_UNAVAILABLE` and continue with local rubrics where safe.
-
-## Plan Reviewer
-
-- `plan-reviewer`: checks planner readiness, plan depth, requirement/material coverage, task package completeness, source anchors, tester selection, quality gates, and whether the plan is only a shallow module list. It writes review reports and result JSON but does not write plans or code.
+- planner：可用 brainstorming 方法逐问澄清、比较方案、提炼成功标准。
+- `frontend-developer`：按需使用 `frontend-design`、`webapp-testing` 或 Codex 中的 `vercel:*`、浏览器验证相关 skill。
+- `document-writer`：按需使用 `docx`、`pdf`、`pptx`、`xlsx`、`doc-coauthoring` 或 Codex 文档/演示/表格 skill。
+- `data-analyst`：按需使用表格、数据校验和可视化工具。
+- `backend-developer`、`toolsmith`、`fullstack-integrator`：按需使用官方文档、调试、测试、部署相关 skill。
+- tester：按测试类型加载视觉、运行、无障碍、安全、性能、数据完整性相关 skill。
+- `release-packager`：按需使用文档、PDF、README、交付打包相关 skill，并承担最终交付审计。

@@ -1,101 +1,21 @@
-# Experience Library Protocol
+# agent 经验库协议
 
-## Paths
+每个 agent 都有自己的经验库。经验库只保存可迁移的原则，不保存项目正文、失败日志全文、隐私信息或一次性细节。
 
-Each agent has a project cache and a global library:
+路径：`.agent-work/experience/shared-principles.md`、`.agent-work/experience/<agent-name>.md`、`/home/zhuyu/.claude/agent-experience/<agent-name>.md`、`C:/Users/zhuyu/.codex/agent-experience/<agent-name>.md`。
 
-```text
-PROJECT_SHARED_EXPERIENCE: .agent-work/experience/shared-principles.md
-PROJECT_AGENT_EXPERIENCE: .agent-work/experience/<agent-name>.md
-CLAUDE_GLOBAL_EXPERIENCE: /home/zhuyu/.claude/agent-experience/<agent-name>.md
-CODEX_GLOBAL_EXPERIENCE: C:\Users\zhuyu\.codex\agent-experience\<agent-name>.md
-```
+## 三条经验写入原则
 
-The coordinator may create, copy, and pass these paths, but must not read experience bodies. Subagents read their own project cache plus `shared-principles.md`.
+1. 原则性 > 数值性：写“为什么错”，不要写“改了什么值”。
+2. 模式级 > 页面级：写“哪类布局、架构、流程容易犯错”，不要写某个页面特例。
+3. 可迁移 > 可复制：换一个完全不同的项目后，这条经验仍然能指导决策。
 
-## Initialization
+判断方法：去掉具体数值、页面名、文件名、项目名后，如果这句话还能指导未来决策，才允许入库。
 
-During init:
+## 写入规则
 
-1. Create `.agent-work/experience/`.
-2. For every configured agent, ensure a UTF-8 project cache file exists.
-3. If a global experience file exists, copy or merge it into the project cache.
-4. If a global experience file is missing, create it from the template below.
-5. Preserve existing project experience; do not delete it during run archive.
+开发 agent 开始前读取共享经验和自己的经验。修复成功后必须写 `<OUTPUT_DIR>/experience-append-summary.md`，并把合格经验追加到项目经验库和可写的全局经验库。跨 agent 通用经验同时追加到 `shared-principles.md`。
 
-## Entry Template
+计划被用户驳回、计划太简单、没有追问关键问题、任务包太粗、或 plan-reviewer 失败时，`project-planner` 必须判断是否产生可迁移经验。
 
-Every agent experience file uses this shape:
-
-```markdown
-# <Agent Name> Experience Library
-
-## Distilled Principles
-
-<!-- Add compact merged principles here. -->
-
-## Full Entries
-
-### Experience - YYYY-MM-DDTHH:mm:ssZ
-
-SOURCE_AGENT: <agent-name>
-TASK_ID: <task-id or N/A>
-FAILURE_TYPE: implementation | test | planning | integration | packaging | process
-LAST_REFERENCED: YYYY-MM-DDTHH:mm:ssZ
-REFERENCE_COUNT: 1
-
-PRINCIPLE:
-<one transferable principle>
-
-WHY:
-<why this was wrong and why the principle generalizes>
-
-DO_NOT_REPEAT:
-- <pattern-level anti-pattern>
-```
-
-## Three Quality Rules
-
-An entry is allowed only when it passes all three rules:
-
-1. Principle over number: write why the decision was wrong, not which literal value changed.
-2. Pattern over page: write which layout, architecture, data, document, or workflow pattern tends to cause the mistake.
-3. Transferable over copyable: the lesson must still guide a different project with different content.
-
-Decision test: remove concrete numbers, page names, filenames, and project-specific nouns. If the sentence no longer guides a future decision, rewrite it before appending.
-
-Bad examples:
-
-- `The focus card shimmer should use rgba(217,119,87,0.12).`
-- `Page 14 stair diagram CSS class should be common.`
-
-Good examples:
-
-- `Custom shimmer on accent cards should stay in the same color family as the border treatment.`
-- `Reusable visual components should use role-based CSS class names rather than page-specific names.`
-
-## Write Policy
-
-- Developers must append an experience entry after a repair succeeds.
-- `project-planner` must write a planner experience decision after any plan rejection, "plan too simple" feedback, requirement reread request, developer `NEEDS_TASK_CLARIFICATION`, or tester report that task packages/anchors/tester choices were insufficient.
-- Testers must check whether the developer wrote a qualifying entry after a repair. If the entry is missing or too concrete, fail or block with a path to the required correction.
-- Any subagent may append a qualifying entry when it discovers a reusable lesson in its own role.
-- If the lesson is cross-role, append it to `shared-principles.md` as well as the agent-specific file.
-- Each completion must write `<OUTPUT_DIR>/experience-append-summary.md` with paths touched and entries added.
-
-## Global Sync
-
-When a subagent appends a valid entry, it must write the same entry to:
-
-1. `.agent-work/experience/<agent-name>.md`
-2. The matching global file for the current runtime, if writable.
-3. `.agent-work/experience/shared-principles.md` and the global shared file only when the lesson is cross-role.
-
-If the global path is not writable, write `GLOBAL_EXPERIENCE_SYNC: SKIPPED_PERMISSION` in the experience append summary and continue. Do not request elevated permission from inside a subagent.
-
-## Capacity
-
-- Agent-specific libraries keep at most 30 full entries.
-- Shared principles keep at most 10 full entries.
-- When over capacity, merge the least recently referenced entries into a compact distilled principle, then remove the merged full entries.
-- When an existing entry is useful, update `LAST_REFERENCED` and increment `REFERENCE_COUNT`.
+coordinator 只负责创建、复制、合并、传递经验库路径。不得读取经验正文、总结经验正文或把经验写入控制面日志。

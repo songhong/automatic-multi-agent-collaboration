@@ -1,107 +1,66 @@
 ---
 name: multi-agent-pipeline-v3
-description: Codex multi-agent pipeline for large projects. Use when the user wants a coordinator that plans, delegates implementation and testing, keeps business content in files, resumes the same responsible worker/tester across repair loops, records logs, and minimizes token usage through path-only handoffs and staged references.
+description: Codex 多 agent 流水线。适用于大型项目的主协调、计划、开发、测试、修复、经验库和路径化交接；主 agent 不读取业务正文，通过控制面 JSON 和文件路径节省 token。
 ---
 
 # Multi-Agent Pipeline v3
 
-This skill is the lightweight entrypoint for a Codex-oriented multi-agent workflow. Load only the reference file for the current stage.
+本 skill 是 Codex 版轻量入口。详细协议按阶段读取 `references/`，避免一次加载全量流程。
 
-## Core Rules
+## 语言规范
 
-- The main agent coordinates only: initialize state, write logs, hand off file paths, report progress, and maintain control-plane JSON.
-- The main agent must not read business payloads: requirements body, plan body, task body, code body, or full test reports.
-- During plan confirmation, user dissatisfaction or requests to carefully, completely, or again read requirement/task/material files are not coordinator read permission. The coordinator must write the feedback file and route it back to the same planner role.
-- Worker and tester agents read business files and write artifacts. They return only status, counts, paths, and structured JSON.
-- Every handoff must include current file paths. Do not rely on conversation memory as the only state.
-- Resume the same responsible agent for repair and retest whenever the runtime supports it. If true runtime resume is unavailable, use logical resume with the same role, same task id, previous manifest path, previous result path, and attempt number.
-- Whoever implemented a batch fixes that batch. Whoever tested a failing batch retests it. After three failed repair attempts, stop the batch and request human review.
-- Do not start every tester by default. The planner must write `required_testers`; if missing, use only `tester-code-quality` and `tester-runtime-effect`.
-- Keep `.agent-work` append-only by run id. Do not delete old work; archive old runs under `.agent-work/archive/<timestamp>/` when needed.
-- Use installed Codex skills only when useful. If an expected skill is unavailable, record `SKILL_UNAVAILABLE` and use the local rubric in references instead of pretending it loaded.
+- 面向用户、agent 行为说明、流程规则、质量标准和错误处理说明使用中文。
+- agent 名、字段名、状态值、路径变量保留英文，例如 `PROJECT_REQUIREMENTS_PATH`、`PLAN_PATH`、`PASS`、`FAIL`。
+- 禁止新增乱码中文、问号乱码触发词或无说明英文长段落。
 
-## Stage References
+## 核心规则
 
-- Initialization, run ids, directories, backup, materials: `references/init.md`
-- Planning, user review, task queue: `references/planning.md`
-- Batch dispatch, workers, integration: `references/execution.md`
-- Evidence-based testing and result JSON: `references/testing.md`
-- Two-layer quality gates and premium review: `references/quality-gates.md`
-- Repair loop, disagreement, human handoff: `references/repair.md`
-- Logs, status machine, progress reports: `references/logging.md`
-- Control-plane schemas: `references/schemas.md`
-- Agent and Codex skill matrix: `references/agent-skill-matrix.md`
-- Plan review rubric: `references/plan-review-rubric.md`
-- Agent experience libraries, three quality rules, and global sync: `references/experience.md`
-- Role prompts and quality bars: `references/roles.md`
-- Local fallback rubrics when a skill is unavailable: `references/rubrics.md`
+- 主 agent 只协调：初始化状态、写日志、传递文件路径、报告进度、维护控制面 JSON。
+- 主 agent 不得读取业务正文：需求正文、计划正文、任务正文、代码正文或完整测试报告。
+- 计划确认阶段，用户不满意或要求仔细/完整/重新阅读需求、任务、材料文件，不是 coordinator 阅读授权。coordinator 必须写反馈文件并交回同一个 planner。
+- worker 和 tester 读取业务文件并写产物；返回给 coordinator 的内容只允许是状态、数量、路径和结构化 JSON。
+- 每次 handoff 都必须包含当前文件路径，不能只依赖对话记忆。
+- 修复和复测优先 resume 同一责任 agent；运行时不支持真 resume 时，用同角色、同 task id、上一轮 manifest/result 路径和 attempt 做逻辑 resume。
+- 谁开发谁修，谁测试谁复测。三轮修复仍失败，停止 batch 并转人工。
+- 不默认启动全部 tester。planner 必须写 `required_testers`；缺失时只用 `tester-code-quality` 和 `tester-runtime-effect`。
 
-## Control Plane Files
+## 阶段参考文件
 
-The coordinator may read and write only these control-plane files:
+- 初始化、run id、目录、备份、材料：`references/init.md`
+- 计划、用户确认、任务队列：`references/planning.md`
+- batch 调度、worker、集成：`references/execution.md`
+- 证据化测试和 result JSON：`references/testing.md`
+- 双层质量门和精品评审：`references/quality-gates.md`
+- 修复循环、争议、人工接管：`references/repair.md`
+- 日志、状态机、进展报告：`references/logging.md`
+- 控制面 schema：`references/schemas.md`
+- agent 与 Codex skill 矩阵：`references/agent-skill-matrix.md`
+- 计划审查 rubric：`references/plan-review-rubric.md`
+- agent 经验库、三原则、全局同步：`references/experience.md`
+- 角色提示词与质量标准：`references/roles.md`
+- skill 不可用时的本地 fallback rubric：`references/rubrics.md`
 
-```text
-.agent-work/state/agent-id-cache.json
-.agent-work/state/pipeline-state.json
-.agent-work/state/batch-config.json
-.agent-work/state/current-batch-control.json
-.agent-work/state/output-check-index/<batch_id>.json
-.agent-work/logs/pipeline-log.jsonl
-.agent-work/logs/progress-log.md
-.agent-work/input/user-feedback-v<N>.md
-.agent-work/human-review/<batch_id>-questions-for-user.json
-.agent-work/human-review/<batch_id>-human-review-required.md
-.agent-work/final/final-pipeline-summary.md
-```
+## 必须流程
 
-These files may contain agent names, runtime ids when available, run ids, batch ids, task ids, page ids, paths, statuses, counts, attempts, required flags, and user-visible questions. They must not contain business prose, code bodies, full test report bodies, bug detail dumps, secrets, or private data.
+1. 读取 `references/init.md` 并初始化 run、日志、id cache、batch config 和 materials manifest。
+2. 把用户原始需求写入 `.agent-work/input/project-requirements.md`，随后停止读取该正文。
+3. 请求 planner 生成候选计划路径；计划必须先通过 `plan-reviewer`，PASS 后才把路径给用户。
+4. 用户要求改计划、不满意、或要求重新阅读需求/任务/材料时，写入 `user-feedback-v<N>.md` 并 resume 同一个 planner；coordinator 不读正文。
+5. 用户确认后，planner 生成 `.agent-work/state/current-batch-control.json`。
+6. 按 batch control 派发 worker/integrator/tester，只读返回的 JSON/状态文件。
+7. tester 失败时，按 `references/repair.md` 回到原 worker 和原 tester。
+8. batch 通过后进入下一批；全部通过后调用 release packager 写最终 summary 路径。
 
-## Required Coordinator Flow
+## Codex 中优先按需使用的 skills
 
-1. Read `references/init.md` and initialize the run, logs, id cache, batch config, and materials manifest.
-2. Write the user's original request to `.agent-work/input/project-requirements.md`, then stop reading that body.
-3. Ask the planner role to generate a candidate plan and return only plan paths. Run `plan-reviewer` on the returned paths; share plan paths with the user only after PASS.
-4. If the user requests plan changes, is dissatisfied, or asks to carefully/completely/re-read requirement, task, or material files, write feedback to `.agent-work/input/user-feedback-v<N>.md` and resume the same planner role; the coordinator must not read those bodies.
-5. After user approval, have the planner produce `.agent-work/state/current-batch-control.json`.
-6. Dispatch the selected worker/integrator/testers from the batch control file. Read only returned JSON/status files.
-7. If any required tester fails, follow `references/repair.md` with the original worker and original tester.
-8. When a batch passes, request the next batch. When all batches pass, run the release packager role to write the final summary path.
-9. Every task uses `completion_quality_gate`; key batches and final delivery use `premium_review_gate` according to planner/release-packager control-plane fields.
+`superpowers:brainstorming`、`superpowers:writing-plans`、`superpowers:dispatching-parallel-agents`、`superpowers:systematic-debugging`、`superpowers:test-driven-development`、`superpowers:verification-before-completion`、`vercel:*`、`documents:documents`、`presentations:Presentations`、`spreadsheets:Spreadsheets`、`pdf`。
 
-## Installed Codex Skills To Prefer
+不要假设 Claude-only skills 如 `frontend-design`、`webapp-testing`、`docx`、`pptx`、`xlsx` 在 Codex 中可用。
 
-Use these only when the task needs them and they are available in the current Codex session:
+## 完成标准
 
-```text
-superpowers:brainstorming
-superpowers:writing-plans
-superpowers:dispatching-parallel-agents
-superpowers:systematic-debugging
-superpowers:test-driven-development
-superpowers:verification-before-completion
-vercel:react-best-practices
-vercel:shadcn
-vercel:nextjs
-vercel:verification
-vercel:agent-browser-verify
-documents:documents
-presentations:Presentations
-spreadsheets:Spreadsheets
-pdf
-```
+每个 batch 有结构化状态、worker manifest、tester result JSON 和证据路径；coordinator 没有读取业务正文；required 输出文件存在且非空；required tester 全部 `PASS` 或批准 `SKIP`；最终报告路径是 `.agent-work/final/final-pipeline-summary.md`。
 
-Do not assume Claude/Anthropic-only skills such as `frontend-design`, `webapp-testing`, `docx`, `pptx`, or `xlsx` exist in Codex. Use the Codex equivalents above or local references.
+## coordinator 材料读取防线
 
-## Completion Criteria
-
-- Every batch has a structured status, worker manifest, tester result JSON, and evidence paths.
-- The coordinator did not read business payload bodies.
-- Required output files exist and are non-empty.
-- All required testers are `PASS` or approved `SKIP`; failures go through the repair loop and stop after three attempts.
-- The final report path is `.agent-work/final/final-pipeline-summary.md`.
-
-Plan quality gate: every candidate initial/revised plan must be reviewed by `plan-reviewer`; FAIL routes report paths back to the same planner.
-
-## Coordinator Material Read Guard
-
-Reference/read/use material-file wording from the user authorizes planner or child agents, not coordinator. Coordinator records only metadata and never reads material bodies. Forbidden on user materials: `Read`, `cat`, `type`, `Get-Content`, `head`, `tail`, `sed`, `grep`, `rg`, and `Select-String`.
+用户说参考、阅读、查看或使用材料文件，授权对象是 planner 或子 agent，不是 coordinator。coordinator 只记录元数据，永远不读取材料正文。禁止对用户材料使用：`Read`、`cat`、`type`、`Get-Content`、`head`、`tail`、`sed`、`grep`、`rg`、`Select-String`。

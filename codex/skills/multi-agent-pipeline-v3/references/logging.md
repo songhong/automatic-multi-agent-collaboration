@@ -1,53 +1,7 @@
-# Logging
+# 日志协议
 
-Logging is part of the workflow, not an afterthought.
+关键事件追加到 `.agent-work/logs/pipeline-log.jsonl`。日志只写 agent 名、任务 id、batch id、状态、路径、attempt、时间和结果计数，不写业务正文。
 
-## JSONL Event
+每完成一页、一个任务或一个 batch，更新 `.agent-work/logs/progress-log.md` 并向用户报告简短进展。
 
-Append one JSON object per important event:
-
-```json
-{
-  "ts": "2026-05-24T19:00:00+08:00",
-  "run_id": "20260524-190000",
-  "stage": "testing",
-  "batch_id": "B001",
-  "agent_role": "tester-runtime-effect",
-  "event": "TEST_COMPLETE",
-  "status": "PASS",
-  "paths": [".agent-work/results/B001/tester-runtime-effect-result.json"]
-}
-```
-
-## Required Events
-
-- `RUN_INITIALIZED`
-- `PLAN_REQUESTED`
-- `PLAN_READY`
-- `PLAN_REVISION_REQUESTED`
-- `PLAN_APPROVED`
-- `BATCH_STARTED`
-- `DEV_STARTED`
-- `DEV_COMPLETE`
-- `TEST_STARTED`
-- `TEST_COMPLETE`
-- `REPAIR_STARTED`
-- `REPAIR_COMPLETE`
-- `BATCH_PASSED`
-- `BATCH_FAILED_NEEDS_HUMAN`
-- `PIPELINE_COMPLETE`
-
-## User Progress
-
-Progress messages should be concise and path-based:
-
-- what completed
-- current status
-- next action
-- relevant report path
-
-Do not paste code, test report bodies, or private content.
-
-## Plan Review Events
-
-Log `plan_review_started`, `plan_review_passed`, `plan_review_failed`, and `plan_review_human_review_required` with result/report paths and counts only. Do not log plan or review body text.
+全部完成后写 `.agent-work/final/final-pipeline-summary.md`，包含执行概览、通过的 batch、失败/人工介入项、最终交付路径和回滚提示。

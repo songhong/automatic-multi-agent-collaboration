@@ -192,7 +192,7 @@ DISAGREED_RESOLVED_COUNT: <接受 DISAGREED 的问题数>
 DISAGREED_ESCALATED_COUNT: <升级的 DISAGREED 问题数>
 ```
 
-## Global Experience Library
+## 全局经验库
 
 EXPERIENCE_LIBRARY_PATHS:
 - PROJECT_SHARED_EXPERIENCE: .agent-work/experience/shared-principles.md
@@ -200,10 +200,10 @@ EXPERIENCE_LIBRARY_PATHS:
 - CLAUDE_GLOBAL_EXPERIENCE: /home/zhuyu/.claude/agent-experience/tester-code-quality.md
 - CODEX_GLOBAL_EXPERIENCE: C:/Users/zhuyu/.codex/agent-experience/tester-code-quality.md
 
-Experience quality gate:
-1. Principle over number: write why the decision was wrong, not the literal value changed.
-2. Pattern over page: write the reusable layout, architecture, data, document, or workflow pattern, not a page-specific fix.
-3. Transferable over copyable: after removing concrete values, page names, file names, and project nouns, the lesson must still guide a future project.
+经验质量门：
+1. 原则性 > 数值性：写为什么决策错了，不写改了哪个具体值。
+2. 模式级 > 页面级：写可复用的布局、架构、数据、文档或流程模式，不写单页修复。
+3. 可迁移 > 可复制：去掉具体数值、页面名、文件名和项目名后，这条经验仍要能指导未来项目。
 Before testing: read the project shared experience file and your project tester experience file, then apply relevant lessons.
 After a repair passes: verify the developer wrote <OUTPUT_DIR>/experience-append-summary.md and that the appended lesson passes the three-rule quality gate. If it is missing or too concrete, return FAIL or BLOCKED with the correction path. If you discover a reusable testing lesson, append it to your own project and global experience files when writable.
 

@@ -1,62 +1,31 @@
-# Initialization
+# 初始化协议
 
-Initialize before planning or implementation.
+coordinator 初始化 `.agent-work/`，建立控制面文件、日志、材料清单、agent id 缓存、批量配置和经验库缓存。初始化阶段仍然不得读取业务正文。
 
-## Run Setup
+## 允许读取的内容
 
-- Create `.agent-work/` if missing.
-- Create:
-  - `.agent-work/runs/<run_id>/`
-  - `.agent-work/input/`
-  - `.agent-work/state/`
-  - `.agent-work/logs/`
-  - `.agent-work/plans/`
-  - `.agent-work/tasks/`
-  - `.agent-work/results/`
-  - `.agent-work/human-review/`
-  - `.agent-work/final/`
-- Use a stable `run_id`, for example `YYYYMMDD-HHMMSS`.
-- Do not delete old runs. If cleanup is needed, move old generated pipeline artifacts to `.agent-work/archive/<timestamp>/`.
+coordinator 只允许读取 pipeline reference 文件和控制面文件。对用户材料只允许读取元数据：path、filename、extension、size、last_modified、existence。
 
-## Experience Library Initialization
+允许命令：`ls`、`stat`、`Get-Item`、`Get-ChildItem`、`Test-Path`。禁止对用户需求或材料使用：`Read`、`cat`、`type`、`Get-Content`、`head`、`tail`、`sed`、`grep`、`rg`、`Select-String`。
 
-Follow `references/experience.md`.
+## 目录与材料清单
 
-- Create `.agent-work/experience/`.
-- Ensure UTF-8 files exist for `shared-principles.md` and every configured agent.
-- Copy or merge global Codex experience from `C:\Users\zhuyu\.codex\agent-experience\<agent-name>.md` into the matching project cache file when available.
-- If global files are missing, create them from the template in `references/experience.md`.
-- Preserve existing project experience files; do not overwrite them with empty templates.
+确保存在 `.agent-work/input/`、`materials/`、`state/`、`logs/`、`plans/`、`tasks/`、`results/`、`test-reports/`、`evidence/`、`handoffs/`、`human-review/`、`final/`、`archive/`、`experience/`。
 
-## Required Initial Files
+材料清单只写 `path`、`filename`、`extension`、`size`、`last_modified`、`user_instruction`、`content_read_by_coordinator: false`、`authorized_reader: project-planner`。不要写摘要、关键词、正文摘录或判断。
 
-- `.agent-work/input/project-requirements.md`: user's original request. The coordinator writes it and then treats it as opaque.
-- `.agent-work/state/materials-manifest.json`: paths to user-provided materials, with existence and file size only.
-- `.agent-work/state/batch-config.json`: batch size, output directory, run id, max repair attempts.
-- `.agent-work/state/agent-id-cache.json`: role-to-runtime-id cache when the runtime exposes reusable ids.
-- `.agent-work/state/pipeline-state.json`: current stage, batch id, status, and counters.
-- `.agent-work/logs/pipeline-log.jsonl`: append-only machine log.
-- `.agent-work/logs/progress-log.md`: user-readable progress notes.
+## 需求文件与 agent id
 
-## Coordinator Limits
+把用户原始要求写入 `.agent-work/input/project-requirements.md`。写入后 coordinator 不再读取该文件正文，只把路径交给 planner。
 
-The coordinator may inspect existence, size, extension, and paths. It must not open business payloads, generated code, plans, task bodies, or full test reports.
+创建 `.agent-work/state/agent-id-cache.json`。修复循环、计划修订、复测必须优先使用缓存里的同一 agent id。只有 id 不可用、过期或 SendMessage 失败时，才允许逻辑 resume。
 
-## Initial User Check
+## 经验库初始化
 
-Confirm, without reading payload bodies:
+创建 `.agent-work/experience/`，为每个配置的 agent 准备项目缓存经验文件，并从全局经验库复制或合并。coordinator 只创建、复制、合并和传递经验库路径，不读取经验正文、不摘要经验、不把经验内容写入日志。
 
-- material paths exist or are intentionally absent
-- output directory is known or marked `TO_BE_DECIDED_BY_PLANNER`
-- batch size is explicit or defaults to `1`
-- max repair attempts defaults to `3`
+## 参考文件触发词
 
-## Configured Agents
+用户说“参考、参考内容、可以参考、看这个文件、阅读这个文件、按照文件内容、依据材料、用这几个文件、结合这些文档”，都只代表授权 `project-planner` 或后续授权子 agent 阅读正文，不代表 coordinator 可以读。
 
-The full pipeline includes 19 agents, including `plan-reviewer`. Experience initialization should include one cache file for every configured agent, including `.agent-work/experience/plan-reviewer.md`.
-
-
-
-## Material Discovery Is Metadata Only
-
-During initialization, coordinator may discover user materials but must not read their bodies. Allowed inspection is path, filename, extension, size, last modified time, and existence only. User phrases such as reference/read/view/use material files authorize planner, not coordinator. Write manifest entries with `content_read_by_coordinator: false` and `authorized_reader: project-planner`.
+如果 coordinator 误读了材料正文，必须立即停止流程，写 `.agent-work/human-review/coordinator-read-violation.md`，只记录路径和工具名，不记录正文内容，也不得基于已读内容继续规划。

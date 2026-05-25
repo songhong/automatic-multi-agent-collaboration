@@ -1,112 +1,31 @@
-# Init Protocol
+# 初始化协议
 
-## Run Setup
+coordinator 初始化 `.agent-work/`，建立控制面文件、日志、材料清单、agent id 缓存、批量配置和经验库缓存。初始化阶段仍然不得读取业务正文。
 
-- Generate `run_id` as `YYYYMMDD-HHMMSS`.
-- Do not delete previous `.agent-work` content.
-- If `.agent-work/input`, `plans`, `tasks`, `handoffs`, `test-reports`, `state`, `human-review`, or `final` already contain a previous run, move them to `.agent-work/archive/<timestamp>/`.
-- Preserve `.agent-work/logs/` and `.agent-work/experience/`.
+## 允许读取的内容
 
-## Required Directories
+coordinator 只允许读取 pipeline reference 文件和控制面文件。对用户材料只允许读取元数据：path、filename、extension、size、last_modified、existence。
 
-```text
-.agent-work/input
-.agent-work/materials
-.agent-work/plans
-.agent-work/tasks
-.agent-work/handoffs
-.agent-work/test-reports
-.agent-work/state/agent-ids
-.agent-work/state/output-check-index
-.agent-work/logs
-.agent-work/human-review
-.agent-work/final
-.agent-work/evidence
-.agent-work/experience
-```
+允许命令：`ls`、`stat`、`Get-Item`、`Get-ChildItem`、`Test-Path`。禁止对用户需求或材料使用：`Read`、`cat`、`type`、`Get-Content`、`head`、`tail`、`sed`、`grep`、`rg`、`Select-String`。
 
-## Experience Library Initialization
+## 目录与材料清单
 
-Follow `references/experience.md`.
+确保存在 `.agent-work/input/`、`materials/`、`state/`、`logs/`、`plans/`、`tasks/`、`results/`、`test-reports/`、`evidence/`、`handoffs/`、`human-review/`、`final/`、`archive/`、`experience/`。
 
-- Create `.agent-work/experience/`.
-- Ensure UTF-8 files exist for `shared-principles.md` and every configured agent.
-- Copy or merge global Claude experience from `/home/zhuyu/.claude/agent-experience/<agent-name>.md` into the matching project cache file when available.
-- If global files are missing, create them from the template in `references/experience.md`.
-- Preserve existing project experience files; do not overwrite them with empty templates.
+材料清单只写 `path`、`filename`、`extension`、`size`、`last_modified`、`user_instruction`、`content_read_by_coordinator: false`、`authorized_reader: project-planner`。不要写摘要、关键词、正文摘录或判断。
 
-## Initial Control Files
+## 需求文件与 agent id
 
-- `.agent-work/state/agent-id-cache.json`
-- `.agent-work/state/pipeline-state.json`
-- `.agent-work/state/batch-config.json`
-- `.agent-work/logs/pipeline-log.jsonl`
-- `.agent-work/logs/progress-log.md`
-- `.agent-work/materials/materials-manifest.md`
+把用户原始要求写入 `.agent-work/input/project-requirements.md`。写入后 coordinator 不再读取该文件正文，只把路径交给 planner。
 
-`batch-config.json` defaults:
+创建 `.agent-work/state/agent-id-cache.json`。修复循环、计划修订、复测必须优先使用缓存里的同一 agent id。只有 id 不可用、过期或 SendMessage 失败时，才允许逻辑 resume。
 
-```json
-{
-  "batch_size": 3,
-  "planner_pool_size": 1,
-  "developer_pool_size": 1,
-  "tester_pool_size": 3,
-  "max_repair_attempts": 3,
-  "default_testers": ["tester-code-quality", "tester-runtime-effect"],
-  "output_dir": "TO_BE_DECIDED"
-}
-```
+## 经验库初始化
 
-## Agent Availability Check
+创建 `.agent-work/experience/`，为每个配置的 agent 准备项目缓存经验文件，并从全局经验库复制或合并。coordinator 只创建、复制、合并和传递经验库路径，不读取经验正文、不摘要经验、不把经验内容写入日志。
 
-Check only `.claude/agents/*.md`. Do not check `.codex`, `.Codex`, or `.agents` for Claude execution.
+## 参考文件触发词
 
-Required agents:
+用户说“参考、参考内容、可以参考、看这个文件、阅读这个文件、按照文件内容、依据材料、用这几个文件、结合这些文档”，都只代表授权 `project-planner` 或后续授权子 agent 阅读正文，不代表 coordinator 可以读。
 
-```text
-pipeline-coordinator
-project-planner
-architect-agent
-development-agent
-frontend-developer
-backend-developer
-document-writer
-data-analyst
-toolsmith
-fullstack-integrator
-tester-code-quality
-tester-visual-aesthetic
-tester-runtime-effect
-tester-security
-tester-performance
-tester-data-integrity
-tester-accessibility
-release-packager
-plan-reviewer
-```
-
-If an agent file is missing, report the missing path and stop before starting the pipeline.
-
-## Material Discovery Is Metadata Only
-
-During initialization, coordinator may discover user materials but must not read their bodies. This applies even when `.agent-work` does not exist yet and materials are in the workspace root.
-
-Allowed metadata:
-- path
-- filename
-- extension
-- size
-- last modified time
-- existence
-
-Forbidden on user materials:
-- `Read(<user material path>)`
-- `cat`, `type`, `Get-Content`
-- `head`, `tail`, `sed`
-- `grep`, `rg`, `Select-String`
-- summaries, keyword extraction, content classification, or body snippets
-
-User phrases such as `??`, `????`, `????`, `?????`, `??????`, `??????`, `????`, `??????`, or `??????` mean the coordinator should record paths and authorization for `project-planner`; they are not coordinator read permission.
-
-Write materials manifest entries with `content_read_by_coordinator: false` and `authorized_reader: project-planner`.
+如果 coordinator 误读了材料正文，必须立即停止流程，写 `.agent-work/human-review/coordinator-read-violation.md`，只记录路径和工具名，不记录正文内容，也不得基于已读内容继续规划。

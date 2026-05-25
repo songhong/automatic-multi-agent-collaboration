@@ -1,85 +1,9 @@
-# Testing
+# 测试协议
 
-Testing must be evidence-based. Testers write result files and return only paths and status.
+tester 检查正确性和完成质量，不只是检查有没有错误。tester 必须读取任务包、developer manifest、输出路径、证据和授权 source anchors。
 
-## Tester Handoff
+测试报告必须分成 `CORRECTNESS_ISSUES` 与 `QUALITY_ISSUES`。任一类存在 blocking 或 major 问题都不能 PASS。
 
-Send each tester:
+必查：developer 是否按任务包执行；是否覆盖验收标准和质量验收标准；是否越权读取无关原始需求；产物是否可运行、完整、可维护；任务包过简时返回 `BLOCKED_TASK_PACKAGE_INCOMPLETE` 或 FAIL。
 
-- batch control path
-- dev manifest path
-- output index path
-- relevant artifact paths
-- prior result path when retesting
-- attempt number
-
-## Tester Result
-
-Each tester writes:
-
-```json
-{
-  "status": "PASS",
-  "tester_role": "tester-runtime-effect",
-  "batch_id": "B001",
-  "attempt": 1,
-  "issue_count": 0,
-  "blocking_issue_count": 0,
-  "evidence": [
-    {"kind": "command", "path": ".agent-work/results/B001/runtime-output.txt"}
-  ],
-  "report_path": ".agent-work/results/B001/tester-runtime-effect-result.json"
-}
-```
-
-Allowed status values:
-
-- `PASS`
-- `FAIL`
-- `SKIP`
-- `BLOCKED`
-
-`SKIP` requires a reason and must not hide required coverage.
-
-## Tester Responsibilities
-
-- `tester-code-quality`: structure, maintainability, lint/type checks when available, local rubrics, task package completeness, and post-repair experience entry quality.
-- `tester-runtime-effect`: build, smoke test, command output, artifact openability.
-- `tester-visual-aesthetic`: layout, visual polish, screenshots, responsive checks.
-- `tester-security`: injection risk, secret leakage, unsafe file/network operations.
-- `tester-performance`: speed, bundle size, memory, obvious bottlenecks.
-- `tester-data-integrity`: calculations, schemas, file transforms, reproducibility.
-- `tester-accessibility`: labels, keyboard flow, contrast, semantic structure.
-
-## Coordinator Aggregation
-
-The coordinator reads only status, counts, evidence paths, and report paths. Any required tester with `FAIL` or `BLOCKED` sends the batch to repair.
-
-## Task Package Check
-
-At least `tester-code-quality` must verify:
-
-- worker manifest includes `task_package_used`
-- task file includes goal, scope, acceptance criteria, expected outputs, source requirement path, source anchors, and source-read authorization
-- worker did not read source requirements outside authorized anchors
-
-If the task package is too vague, acceptance criteria are missing, or source-read authorization was exceeded, return `FAIL` or `BLOCKED`.
-
-## Experience Check
-
-After a repair attempt succeeds, at least `tester-code-quality` must verify:
-
-- `<OUTPUT_DIR>/experience-append-summary.md` exists
-- the summary points to `.agent-work/experience/<worker-role>.md`
-- the appended entry passes `references/experience.md`
-- the lesson is principle-level, pattern-level, and transferable rather than a literal page/value/file tweak
-
-If the entry is missing or too concrete, return `FAIL` or `BLOCKED` with the correction path.
-
-## Completion Quality Gate
-
-Every scheduled tester verifies the task goal, acceptance criteria, source anchors, material requirements, and `quality_acceptance_criteria` for its scope. Reports must separate `CORRECTNESS_ISSUES` from `QUALITY_ISSUES`. PASS requires zero blocking/major issues in both categories.
-
-## Premium Review Gate
-
-When `premium_review_required: true`, testers review professional deliverability: coherence, polish, consistency, final-user usability, and readiness to hand over. Stay scoped and fail only issues that materially reduce final quality or contradict success criteria.
+coordinator 只读取 result.json 的状态、数量、路径和是否需要修复。测试报告正文不进入 coordinator 上下文。

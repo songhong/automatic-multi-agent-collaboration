@@ -1,81 +1,11 @@
-# Agent Skill Matrix
+# agent skill 使用矩阵
 
-## Official Skills Available
+只按任务需要加载 skill，禁止为了保险一次性加载所有 skill。缺失 skill 时记录 `SKILL_UNAVAILABLE`，再使用本项目 reference/rubric。
 
-The user confirmed these Anthropic skills exist in WSL Claude plugin/global paths:
-
-```text
-pdf
-docx
-pptx
-xlsx
-frontend-design
-webapp-testing
-skill-creator
-```
-
-Use them through the `Skill` tool when relevant. If unavailable at runtime, record `SKILL_UNAVAILABLE`.
-
-## Optional Or Non-Local Capabilities
-
-Do not assume these are installed local skills:
-
-```text
-code-review
-code-simplifier
-security-review
-security-guidance
-verify
-vercel:*
-superpowers:*
-```
-
-If available as plugins in the running Claude environment, they may be used. Otherwise use the local instructions and rubrics in this project.
-
-## Developer Agents
-
-- `project-planner`: planning references, agent selection guide, schemas.
-- `architect-agent`: schemas, agent selection guide, architecture/interface checklist.
-- `frontend-developer`: `frontend-design` for UI-heavy work; `webapp-testing` only for self-check if needed.
-- `backend-developer`: local backend checklist; use external plugin skills only if explicitly available.
-- `document-writer`: `pdf`, `docx`, `pptx` according to output type.
-- `data-analyst`: `xlsx` for spreadsheet work.
-- `toolsmith`: local CLI checklist and evidence protocol.
-- `fullstack-integrator`: schemas, execution protocol, webapp-testing for integration verification.
-- `release-packager`: logging, schemas, output check index.
-
-## Tester Agents
-
-- `tester-code-quality`: local code quality rubric plus build/lint/typecheck evidence.
-- `tester-runtime-effect`: `webapp-testing` for web apps; otherwise command/log evidence.
-- `tester-visual-aesthetic`: `frontend-design` plus screenshot evidence.
-- `tester-security`: local security rubric plus available audit/secret-scan evidence.
-- `tester-performance`: metrics-focused local checklist.
-- `tester-data-integrity`: independent recomputation/check fixtures.
-- `tester-accessibility`: local accessibility checklist plus browser/axe evidence if available.
-
-## On-Demand Skill Loading Rules
-
-Agents should load specialist skills only when the current task needs them. Loading every possible skill wastes tokens and can dilute instructions.
-
-- `project-planner`: may use brainstorming-style planning when requirements are unclear, rejected, large, or need tradeoff discussion. Use only the relevant planning references and agent selection guide.
-- `frontend-developer`: use `frontend-design` for UI quality/design tasks; use `webapp-testing` for local interaction checks when a runnable web surface exists; use framework-specific skills only when the repo clearly uses that framework.
-- `backend-developer`: use official docs or platform/framework skills only when the task depends on current API behavior; otherwise use local evidence and tests.
-- `document-writer`: use `docx`, `pdf`, `pptx`, `xlsx`, or `doc-coauthoring` only when the deliverable type requires it.
-- `data-analyst`: use `xlsx` for spreadsheet inputs/outputs and independent data checks for numerical claims.
-- `toolsmith`: use debugging/testing/platform docs only when the command behavior or runtime is uncertain.
-- `fullstack-integrator`: use `webapp-testing` when validating integrated web flows; otherwise rely on manifests and runtime evidence.
-- `tester-visual-aesthetic`: use `frontend-design` and screenshot evidence for visual quality.
-- `tester-runtime-effect`: use `webapp-testing` for browser flows; otherwise command/log evidence.
-- `tester-security`: use available security tools or rubrics; do not install global scanners without user permission.
-- `tester-performance`: use measurable local metrics and record limitations when tooling is unavailable.
-- `tester-data-integrity`: use independent recomputation or fixture checks.
-- `tester-accessibility`: use browser/axe evidence when available and record limitations otherwise.
-- `release-packager`: use document/PDF/README-related skills only when producing or auditing those deliverables.
-
-If a named skill is unavailable at runtime, write `SKILL_UNAVAILABLE` in the evidence or report and continue with local rubrics where safe.
-
-## Plan Reviewer
-
-- `plan-reviewer`: reads requirement, materials, planner readiness, plan, and task queue paths; uses `plan-review-rubric.md`; writes plan review reports and result JSON; does not write plans or code.
-- Load `plan-review-rubric.md` only for plan review. Do not load developer/tester rubrics unless the plan specifically needs those quality dimensions.
+- planner：可用 brainstorming 方法逐问澄清、比较方案、提炼成功标准。
+- `frontend-developer`：按需使用 `frontend-design`、`webapp-testing` 或 Codex 中的 `vercel:*`、浏览器验证相关 skill。
+- `document-writer`：按需使用 `docx`、`pdf`、`pptx`、`xlsx`、`doc-coauthoring` 或 Codex 文档/演示/表格 skill。
+- `data-analyst`：按需使用表格、数据校验和可视化工具。
+- `backend-developer`、`toolsmith`、`fullstack-integrator`：按需使用官方文档、调试、测试、部署相关 skill。
+- tester：按测试类型加载视觉、运行、无障碍、安全、性能、数据完整性相关 skill。
+- `release-packager`：按需使用文档、PDF、README、交付打包相关 skill，并承担最终交付审计。

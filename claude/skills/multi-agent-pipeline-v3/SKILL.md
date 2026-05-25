@@ -8,8 +8,14 @@ allowed-tools: Agent(project-planner, plan-reviewer, architect-agent, developmen
 
 本 skill 是轻量入口。详细协议按阶段读取 `references/`，避免每次启动加载全量流程。
 
-## Core Rules
-- Reference-material no-read rule: when the user says `??`, `????`, `????`, `?????`, `??????`, `??????`, `????`, `??????`, or `??????`, the authorization is for `project-planner` and authorized child agents, not for coordinator. Coordinator records only paths and metadata.
+## 语言规范
+
+- 面向用户、agent 行为说明、流程规则、质量标准和错误处理说明必须使用中文。
+- agent 名、字段名、状态值、路径变量保留英文，例如 `PROJECT_REQUIREMENTS_PATH`、`PLAN_PATH`、`PASS`、`FAIL`。
+- 禁止新增乱码中文、问号乱码 触发词或无说明英文长段落。
+
+## 核心规则
+- 参考材料禁止主协调器阅读规则：用户说“参考”“参考内容”“可以参考”“看这个文件”“阅读这个文件”“按照文件内容”“依据材料”“用这几个文件”“结合这些文档”，授权对象是 `project-planner` 和被授权的子 agent，不是 coordinator。coordinator 只记录路径和元数据。
 
 - 运行环境以 WSL Claude Code 为准，只使用 `.claude/agents/`、`.claude/skills/`、`.agent-work/`。
 - 主 agent 只调度、写日志、汇报进度、维护控制面文件；不得读需求、计划、任务、代码、测试报告正文。
@@ -21,7 +27,7 @@ allowed-tools: Agent(project-planner, plan-reviewer, architect-agent, developmen
 - 不直接删除旧 `.agent-work`。每次运行使用 `run_id`，旧产物归档到 `.agent-work/archive/<timestamp>/` 或新建 `.agent-work/runs/<run_id>/`。
 - 官方 skills 优先使用已安装插件/全局 skill；如果 `Skill` 工具提示不可用，记录 `SKILL_UNAVAILABLE`，不得伪造已加载。
 
-## Stage References
+## 阶段参考文件
 
 按当前阶段只读取对应文件：
 
@@ -35,7 +41,7 @@ allowed-tools: Agent(project-planner, plan-reviewer, architect-agent, developmen
 - agent 与 skill 配备矩阵：`references/agent-skill-matrix.md`
 - agent 经验库、三原则、全局同步：`references/experience.md`
 
-## Control Plane Files
+## 控制面文件
 
 主 agent 只允许读取/写入控制面文件：
 
@@ -55,7 +61,7 @@ allowed-tools: Agent(project-planner, plan-reviewer, architect-agent, developmen
 
 这些文件只允许包含 agent 名称、agent id、run id、batch id、task id、page id、路径、状态、计数、attempt、required 标记、用户可见问题与选项。不得包含需求正文、代码正文、测试报告正文、bug 细节或敏感信息。
 
-## Required Coordinator Flow
+## coordinator 必须遵循的流程
 
 1. 读取 `references/init.md`，初始化 run、日志、agent id cache、batch 配置和素材清单。
 2. 将用户需求写入 `.agent-work/input/project-requirements.md`，不再阅读正文。
@@ -67,7 +73,7 @@ allowed-tools: Agent(project-planner, plan-reviewer, architect-agent, developmen
 8. batch 通过后进入下一 batch。
 9. 所有 batch 通过后启动 `release-packager` 生成最终报告路径；主 agent 汇报路径和状态。
 
-## Official Skills Available In This User Environment
+## 当前环境可用的官方 skills
 
 用户已确认 WSL Claude 环境存在这些 Anthropic skills：
 
@@ -83,7 +89,7 @@ skill-creator
 
 子 agent 可按需加载这些 skills。`code-review`、`security-review`、`verify`、`code-simplifier`、`security-guidance` 不假定为本地 skill；对应能力使用本项目 references/rubrics，除非运行时明确可用。
 
-## Completion Criteria
+## 完成标准
 
 - 每个 batch 有结构化状态、开发 manifest、测试 result.json 和证据路径。
 - 主 agent 未读取业务正文。
@@ -95,9 +101,9 @@ skill-creator
 
 - Plan reviewer rubric: `references/plan-review-rubric.md`
 
-Plan quality gate: every initial/revised plan must be reviewed by `plan-reviewer`; FAIL returns only paths to the same planner for revision.
+计划质量门：每个初版/修订计划都必须先由 `plan-reviewer` 审查；如果 FAIL，只把审查报告路径传回同一个 planner 修订。
 
-## Coordinator Material Read Guard
+## coordinator 材料读取防线
 
 Coordinator must not read user material bodies during initialization or later routing. Allowed material inspection is metadata only: path, filename, extension, size, last modified time, and existence. Forbidden on user materials: `Read`, `cat`, `type`, `Get-Content`, `head`, `tail`, `sed`, `grep`, `rg`, and `Select-String`.
 
